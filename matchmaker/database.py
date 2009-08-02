@@ -30,6 +30,9 @@ class Database:
         "r_name[repos_name] = [repos, ...]"
         self.r_name = defaultdict(list)
 
+        "r_langs[repos] = [lang, ...]"
+        self.r_langs = defaultdict(list)
+
         "forks_of_r[parent] = [child, ...]"
         self.forks_of_r = defaultdict(list)
 
@@ -70,6 +73,7 @@ class Database:
             self.u_watching = d['u_watching']
             self.r_info = d['r_info']
             self.r_name = d['r_name']
+            self.r_langs = d['r_langs']
             self.forks_of_r = d['forks_of_r']
             self.parent_of_r = d['parent_of_r']
             self.gparent_of_r = d['gparent_of_r']
@@ -89,6 +93,7 @@ class Database:
         d['u_watching'] = self.u_watching
         d['r_info'] = self.r_info
         d['r_name'] = self.r_name
+        d['r_langs'] = self.r_langs
         d['forks_of_r'] = self.forks_of_r
         d['parent_of_r'] = self.parent_of_r
         d['gparent_of_r'] = self.gparent_of_r
@@ -105,6 +110,7 @@ class Database:
                  "u_watching "
                  "r_info "
                  "r_name "
+                 "r_langs "
                  "forks_of_r "
                  "parent_of_r "
                  "gparent_of_r "
@@ -176,6 +182,7 @@ class Database:
         for repos, langs in pairs:
             for kloc, lang in langs:
                 self.lang_by_r[lang].append((kloc, repos))
+                self.r_langs[repos].append(lang)
 
         for lang in self.lang_by_r.keys():
             self.lang_by_r[lang].sort(reverse=True)
