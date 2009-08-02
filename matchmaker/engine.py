@@ -58,12 +58,6 @@ class Engine:
                 for r1 in u_authoring[author]:
                     scores[r1] += 2 / log(2 + len(u_watching[r1]))
 
-            # find others by name
-            if r in r_info:
-                name = r_info[r][1]
-                for r1 in r_name[name]:
-                    scores[r1] += 1 / log(2 + len(u_watching[r1]))
-
         # cleanup
         for r in u_watching[user] + [0]:
             if r in scores:
