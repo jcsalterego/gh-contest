@@ -51,7 +51,8 @@ class Engine:
         scores = [(lambda (x,y): (y,x))(score) for score in scores.items()]
         scores.sort(reverse=True)
         final = [s[1] for s in scores[:10]]
-        pprint(scores[:10])
+        if 'production' not in sys.argv:
+            pprint(scores[:10])
         return final
 
     def results(self):
