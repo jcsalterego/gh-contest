@@ -169,7 +169,9 @@ class Database:
         for repos, langs in pairs:
             for kloc, lang in langs:
                 self.lang_by_r[lang].append((kloc, repos))
-                self.lang_by_r[lang].sort(reverse=True)
+
+        for lang in self.lang_by_r.keys():
+            self.lang_by_r[lang].sort(reverse=True)
 
     def parse_test(self):
         """Parse test.txt which has test subjects
