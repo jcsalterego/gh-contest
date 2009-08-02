@@ -34,11 +34,11 @@ class Engine:
             # loop through all watched repositories
             
             # find forks
-            for r in forks_of_r[r]:
-                scores[r] += 1 / log(2 + len(u_watching[r]))
+            for r1 in forks_of_r[r]:
+                scores[r1] += 1 / log(2 + len(u_watching[r1]))
             # find siblings
-            for r in forks_of_r[parent_of_r[r]]:
-                scores[r] += 1 / log(2 + len(u_watching[r]))
+            for r1 in forks_of_r[parent_of_r[r]]:
+                scores[r1] += 1 / log(2 + len(u_watching[r1]))
             # find parents
             scores[parent_of_r[r]] += 1 / log(2 + len(u_watching[r]))
 
@@ -50,7 +50,7 @@ class Engine:
         scores = [(lambda (x,y): (y,x))(score) for score in scores.items()]
         scores.sort(reverse=True)
         final = [s[1] for s in scores[:10]]
-        pprint(scores[:10], stream=sys.stderr)
+        pprint(scores[:10])
         return final
 
     def results(self):
