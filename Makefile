@@ -5,3 +5,5 @@ wipe:
 	rm -f {mini,}data/pickle.jar
 stats:
 	python recommend.py stats | less
+production:
+	python recommend.py production >/dev/null
