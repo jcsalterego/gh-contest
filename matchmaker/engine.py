@@ -35,12 +35,13 @@ class Engine:
             
             # find forks
             for r1 in forks_of_r[r]:
-                scores[r1] += 1 / log(2 + len(u_watching[r1]))
+                scores[r1] += 2 / log(2 + len(u_watching[r1]))
             # find siblings
-            for r1 in forks_of_r[parent_of_r[r]]:
-                scores[r1] += 1 / log(2 + len(u_watching[r1]))
+            if parent_of_r[r] > 0:
+                for r1 in forks_of_r[parent_of_r[r]]:
+                    scores[r1] += 2 / log(2 + len(u_watching[r1]))
             # find parents
-            scores[parent_of_r[r]] += 1 / log(2 + len(u_watching[r]))
+            scores[parent_of_r[r]] += 2
 
         # cleanup
         for r in u_watching[user] + [0]:
