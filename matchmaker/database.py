@@ -15,14 +15,15 @@ class Database:
         """
         self.datadir = datadir
 
+        if self.pickle_jar():
+            return
+
         self.watching_r = defaultdict(list)
         self.u_watching = defaultdict(list)
-
         self.r_info = {}
         self.forks_of_r = defaultdict(list)
         self.parent_of_r = defaultdict(int)
         self.gparent_of_r = defaultdict(int)
-
         self.lang_by_r = defaultdict(list)
         self.u_authoring = defaultdict(list)
 
@@ -30,6 +31,48 @@ class Database:
         self.parse_watching()
         self.parse_repos()
         self.parse_lang()
+
+        self.fill_pickle_jar()
+
+    def pickle_jar(self):
+        jar = '/'.join((self.datadir, "pickle.jar"))
+        if os.path.exists(jar):
+            try:
+                jarf = open(jar, 'r')
+                d = pickle.load(jarf)
+                jarf.close()
+            except:
+                return False
+
+            self.watching_r = d['watching_r']
+            self.u_watching = d['u_watching']
+            self.r_info = d['r_info']
+            self.forks_of_r = d['forks_of_r']
+            self.parent_of_r = d['parent_of_r']
+            self.gparent_of_r = d['gparent_of_r']
+            self.lang_by_r = d['lang_by_r']
+            self.u_authoring = d['u_authoring']
+
+            return True
+        else:
+            return False
+
+    def fill_pickle_jar(self):
+        jar = '/'.join((self.datadir, "pickle.jar"))
+        d = {}
+
+        d['watching_r'] = self.watching_r
+        d['u_watching'] = self.u_watching
+        d['r_info'] = self.r_info
+        d['forks_of_r'] = self.forks_of_r
+        d['parent_of_r'] = self.parent_of_r
+        d['gparent_of_r'] = self.gparent_of_r
+        d['lang_by_r'] = self.lang_by_r
+        d['u_authoring'] = self.u_authoring
+
+        jarf = open(jar, 'w')
+        pickle.dump(d, jarf)
+        jarf.close()
 
     def parse_watching(self):
         """Parse data.txt which has main user-repository relationships
