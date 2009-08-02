@@ -42,10 +42,14 @@ class Database:
         "u_authoring[author] = [repos, ...]"
         self.u_authoring = defaultdict(list)
 
+        "test_u = [user, ...]"
+        self.test_u = []
+
         # collect data
         self.parse_watching()
         self.parse_repos()
         self.parse_lang()
+        self.parse_test()
 
         self.fill_pickle_jar()
 
@@ -67,6 +71,7 @@ class Database:
             self.gparent_of_r = d['gparent_of_r']
             self.lang_by_r = d['lang_by_r']
             self.u_authoring = d['u_authoring']
+            self.test_u = d['test_u']
 
             return True
         else:
@@ -84,6 +89,7 @@ class Database:
         d['gparent_of_r'] = self.gparent_of_r
         d['lang_by_r'] = self.lang_by_r
         d['u_authoring'] = self.u_authoring
+        d['test_u'] = self.test_u
 
         jarf = open(jar, 'w')
         pickle.dump(d, jarf)
@@ -105,6 +111,13 @@ class Database:
             else:
                 pprint(dict(getattr(self, prop).items()[:5]))
             print("")
+
+        print(">> test_u")
+        if unabridged:
+            pprint(self.test_u)
+        else:
+            pprint(self.test_u[:5])
+        print("")
 
     def parse_watching(self):
         """Parse data.txt which has main user-repository relationships
@@ -157,3 +170,9 @@ class Database:
             for kloc, lang in langs:
                 self.lang_by_r[lang].append((kloc, repos))
                 self.lang_by_r[lang].sort(reverse=True)
+
+    def parse_test(self):
+        """Parse test.txt which has test subjects
+        """
+        lines = file('/'.join((self.datadir, "test.txt"))).read().split("\n")
+        self.test_u = [int(line) for line in lines if line]
