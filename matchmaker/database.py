@@ -6,6 +6,7 @@ except:
     import pickle
 import os
 
+from math import log
 from collections import defaultdict
 from pprint import pprint
 
@@ -30,7 +31,7 @@ class Database:
         "r_name[repos_name] = [repos, ...]"
         self.r_name = defaultdict(list)
 
-        "r_langs[repos] = [lang, ...]"
+        "r_langs[repos] = [(lang, kloc), ...]"
         self.r_langs = defaultdict(list)
 
         "forks_of_r[parent] = [child, ...]"
@@ -181,8 +182,16 @@ class Database:
 
         for repos, langs in pairs:
             for kloc, lang in langs:
-                self.lang_by_r[lang].append((kloc, repos))
-                self.r_langs[repos].append(lang)
+                try:
+                    lnlog = int(log(kloc + 1))
+                except:
+                    import sys
+                    print >>sys.stderr, kloc + 1
+                    print >>sys.stderr, log(kloc + 1)
+                    print >>sys.stderr, int(log(kloc + 1))
+                
+                self.lang_by_r[lang].append((lnlog, repos))
+                self.r_langs[repos].append((lang, lnlog))
 
         for lang in self.lang_by_r.keys():
             self.lang_by_r[lang].sort(reverse=True)
