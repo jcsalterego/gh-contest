@@ -6,4 +6,4 @@ wipe:
 stats:
 	python recommend.py stats | less
 production:
-	python recommend.py production >/dev/null
+	time python recommend.py production >/dev/null
