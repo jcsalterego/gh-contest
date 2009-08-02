@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 import random
 from collections import defaultdict
 
@@ -15,9 +16,17 @@ class Engine:
         db = self.database
 
         r_list = db.r_info.keys()
+        maxrep = len(r_list) / 10 / 2
+
+        i = 0
+        random.shuffle(r_list)
         for u in db.test_u:
-            random.shuffle(r_list)
-            self.recommended[u] = [str(x) for x in r_list[:10]]
+            i += 1
+            if i % maxrep == 0:
+                random.shuffle(r_list)
+            start = i % maxrep * 10
+            end = start + 10
+            self.recommended[u] = [str(x) for x in r_list[start:end]]
 
     def results(self):
         lines = []
