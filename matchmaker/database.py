@@ -74,6 +74,23 @@ class Database:
         pickle.dump(d, jarf)
         jarf.close()
 
+    def summary(self, unabridged=False):
+        props = ("watching_r "
+                 "u_watching "
+                 "r_info "
+                 "forks_of_r "
+                 "parent_of_r "
+                 "gparent_of_r "
+                 "lang_by_r "
+                 "u_authoring ").split()
+        for prop in props:
+            print(">> %s" % prop)
+            if unabridged:
+                pprint(dict(getattr(self, prop).items()))
+            else:
+                pprint(dict(getattr(self, prop).items()[:5]))
+            print("")
+
     def parse_watching(self):
         """Parse data.txt which has main user-repository relationships
         """
