@@ -177,4 +177,4 @@ class Database:
         """Parse test.txt which has test subjects
         """
         lines = file('/'.join((self.datadir, "test.txt"))).read().split("\n")
-        self.test_u = [int(line) for line in lines if line]
+        self.test_u = sorted([int(line) for line in lines if line])
