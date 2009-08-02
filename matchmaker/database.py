@@ -27,6 +27,9 @@ class Database:
         "r_info[repos] = [(author, name, creation), ...]"
         self.r_info = {}
 
+        "r_name[repos_name] = [repos, ...]"
+        self.r_name = defaultdict(list)
+
         "forks_of_r[parent] = [child, ...]"
         self.forks_of_r = defaultdict(list)
 
@@ -66,6 +69,7 @@ class Database:
             self.watching_r = d['watching_r']
             self.u_watching = d['u_watching']
             self.r_info = d['r_info']
+            self.r_name = d['r_name']
             self.forks_of_r = d['forks_of_r']
             self.parent_of_r = d['parent_of_r']
             self.gparent_of_r = d['gparent_of_r']
@@ -84,6 +88,7 @@ class Database:
         d['watching_r'] = self.watching_r
         d['u_watching'] = self.u_watching
         d['r_info'] = self.r_info
+        d['r_name'] = self.r_name
         d['forks_of_r'] = self.forks_of_r
         d['parent_of_r'] = self.parent_of_r
         d['gparent_of_r'] = self.gparent_of_r
@@ -99,6 +104,7 @@ class Database:
         props = ("watching_r "
                  "u_watching "
                  "r_info "
+                 "r_name "
                  "forks_of_r "
                  "parent_of_r "
                  "gparent_of_r "
@@ -148,6 +154,7 @@ class Database:
             author, name = name.split("/")
             self.r_info[repos] = (author, name, creation)
             self.u_authoring[author].append(repos)
+            self.r_name[name].append(repos)
 
         for repos_gen1, repos_gen2 in self.parent_of_r.items():
             if repos_gen2 in self.parent_of_r:
