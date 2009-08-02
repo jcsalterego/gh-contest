@@ -30,6 +30,7 @@ class Engine:
 
     def results(self):
         lines = []
-        for u, r_list in self.recommended.items():
+        for u in sorted(self.recommended.keys()):
+            r_list = self.recommended[u]
             lines.append(':'.join((str(u), ','.join(r_list))))
         return "\n".join(lines)
