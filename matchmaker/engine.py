@@ -27,6 +27,8 @@ class Engine:
         db = self.database
         r_info = db.r_info
         r_name = db.r_name
+        r_langs = db.r_langs
+        lang_by_r = db.lang_by_r
         u_watching = db.u_watching
         forks_of_r = db.forks_of_r
         parent_of_r = db.parent_of_r
@@ -72,6 +74,14 @@ class Engine:
                 author = r_info[r][0]
                 for r1 in u_authoring[author]:
                     scores[r1] += 2 / log(2 + len(u_watching[r1]))
+
+            for lang, lnlog in r_langs[r]:
+                i = 0
+                for lnlog2, repos in lang_by_r[lang]:
+                    if i == 10:
+                        break
+                    scores[repos] += 0.5 / log(2 + len(u_watching[repos]))
+                    i += 1
 
         # cleanup
         for r in u_watching[user] + [0]:

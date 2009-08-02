@@ -194,7 +194,7 @@ class Database:
                 self.r_langs[repos].append((lang, lnlog))
 
         for lang in self.lang_by_r.keys():
-            self.lang_by_r[lang].sort(reverse=True)
+            self.lang_by_r[lang].sort(key=lambda x:x[1])
 
     def parse_test(self):
         """Parse test.txt which has test subjects
