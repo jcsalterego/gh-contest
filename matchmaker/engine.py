@@ -30,6 +30,7 @@ class Engine:
         u_watching = db.u_watching
         forks_of_r = db.forks_of_r
         parent_of_r = db.parent_of_r
+        gparent_of_r = db.parent_of_r
         u_authoring = db.u_authoring
 
         scores = defaultdict(int)
@@ -39,6 +40,7 @@ class Engine:
             # find forks
             for r1 in forks_of_r[r]:
                 scores[r1] += 2 / log(2 + len(u_watching[r1]))
+
             # find parents and siblings
             if parent_of_r[r] > 0:
                 parent = parent_of_r[r]
@@ -47,6 +49,19 @@ class Engine:
                     scores[r1] += 2 / log(2 + len(u_watching[r1]))
 
                     # find others by author of parent
+                    if r1 in r_info:
+                        author = r_info[r1][0]
+                        for r2 in u_authoring[author]:
+                            scores[r2] += 1 / log(2 + len(u_watching[r2]))
+
+            # find grandparents and uncles/aunts
+            if gparent_of_r[r] > 0:
+                gparent = gparent_of_r[r]
+                scores[gparent] += 2
+                for r1 in forks_of_r[gparent]:
+                    scores[r1] += 2 / log(2 + len(u_watching[r1]))
+
+                    # find others by author of gparent
                     if r1 in r_info:
                         author = r_info[r1][0]
                         for r2 in u_authoring[author]:
