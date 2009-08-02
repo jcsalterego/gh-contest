@@ -3,6 +3,7 @@
 import sys
 import random
 from collections import defaultdict
+from pprint import pprint
 
 class Engine:
     def __init__(self, database):
@@ -14,23 +15,47 @@ class Engine:
 
     def process(self):
         db = self.database
-
         r_list = db.r_info.keys()
-        maxrep = len(r_list) / 10 / 2
 
-        i = 0
-        random.shuffle(r_list)
         for u in db.test_u:
-            i += 1
-            if i % maxrep == 0:
-                random.shuffle(r_list)
-            start = i % maxrep * 10
-            end = start + 10
-            self.recommended[u] = [str(x) for x in r_list[start:end]]
+            self.recommended[u] = self.user_process(u)
+
+    def user_process(self, user):
+        """Returns ten recommendations
+        """
+        db = self.database
+        u_watching = db.u_watching[user]
+        forks_of_r = db.forks_of_r
+        parent_of_r = db.parent_of_r
+
+        scores = defaultdict(int)
+        for r in u_watching:
+            # loop through all watched repositories
+            
+            # find forks
+            for r in forks_of_r[r]:
+                scores[r] += 1
+            # find siblings
+            for r in forks_of_r[parent_of_r[r]]:
+                scores[r] += 1
+            # find parents
+            scores[parent_of_r[r]] += 1
+
+        # cleanup
+        for r in u_watching + [0]:
+            if r in scores:
+                del scores[r]
+
+        scores = [(lambda (x,y): (y,x))(score) for score in scores.items()]
+        scores.sort(reverse=True)
+        final = [s[1] for s in scores[:10]]
+        pprint(scores[:10], stream=sys.stderr)
+        return final
 
     def results(self):
         lines = []
         for u in sorted(self.recommended.keys()):
             r_list = self.recommended[u]
-            lines.append(':'.join((str(u), ','.join(r_list))))
+            lines.append(':'.join((str(u),
+                                   ','.join([str(v) for v in r_list]))))
         return "\n".join(lines)
