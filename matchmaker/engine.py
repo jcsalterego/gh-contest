@@ -26,6 +26,7 @@ class Engine:
         """
         db = self.database
         r_info = db.r_info
+        r_name = db.r_name
         u_watching = db.u_watching
         forks_of_r = db.forks_of_r
         parent_of_r = db.parent_of_r
@@ -56,6 +57,12 @@ class Engine:
                 author = r_info[r][0]
                 for r1 in u_authoring[author]:
                     scores[r1] += 2 / log(2 + len(u_watching[r1]))
+
+            # find others by name
+            if r in r_info:
+                name = r_info[r][1]
+                for r1 in r_name[name]:
+                    scores[r1] += 1 / log(2 + len(u_watching[r1]))
 
         # cleanup
         for r in u_watching[user] + [0]:
