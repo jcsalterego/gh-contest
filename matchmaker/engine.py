@@ -26,8 +26,7 @@ class Engine:
         """
         db = self.database
         r_info = db.r_info
-        r_langs = db.r_langs
-        lang_by_r = db.lang_by_r
+        r_name = db.r_name
         u_watching = db.u_watching
         forks_of_r = db.forks_of_r
         parent_of_r = db.parent_of_r
@@ -73,16 +72,6 @@ class Engine:
                 author = r_info[r][0]
                 for r1 in u_authoring[author]:
                     scores[r1] += 2 / log(2 + len(u_watching[r1]))
-
-            # find similar projects by language
-            for lang, lnlog in r_langs[r]:
-                num = 0
-                for lnlog2, r1 in lang_by_r[lang]:
-                    if lnlog == lnlog2:
-                        scores[r1] += 1 / log(2 + len(u_watching[r1]))
-                        num += 1
-                    if num == 10:
-                        break
 
         # cleanup
         for r in u_watching[user] + [0]:
