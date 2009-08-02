@@ -18,13 +18,28 @@ class Database:
         if self.pickle_jar():
             return
 
+        "watching_r[repos] = [user, ...]"
         self.watching_r = defaultdict(list)
+
+        "u_watching[user] = [repos, ...]"
         self.u_watching = defaultdict(list)
+
+        "r_info[repos] = [(author, name, creation), ...]"
         self.r_info = {}
+
+        "forks_of_r[parent] = [child, ...]"
         self.forks_of_r = defaultdict(list)
+
+        "parent_of_r[child] = parent"
         self.parent_of_r = defaultdict(int)
+
+        "gparent_of_r[child] = grandparent"
         self.gparent_of_r = defaultdict(int)
+
+        "lang_by_r[lang] = [(kloc, repos), ...]"
         self.lang_by_r = defaultdict(list)
+
+        "u_authoring[author] = [repos, ...]"
         self.u_authoring = defaultdict(list)
 
         # collect data
