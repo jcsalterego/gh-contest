@@ -24,12 +24,12 @@ class Engine:
         """Returns ten recommendations
         """
         db = self.database
-        u_watching = db.u_watching[user]
+        u_watching = db.u_watching
         forks_of_r = db.forks_of_r
         parent_of_r = db.parent_of_r
 
         scores = defaultdict(int)
-        for r in u_watching:
+        for r in u_watching[user]:
             # loop through all watched repositories
             
             # find forks
@@ -42,7 +42,7 @@ class Engine:
             scores[parent_of_r[r]] += 1
 
         # cleanup
-        for r in u_watching + [0]:
+        for r in u_watching[user] + [0]:
             if r in scores:
                 del scores[r]
 
