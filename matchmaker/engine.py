@@ -2,6 +2,7 @@
 
 import sys
 import random
+from math import log
 from collections import defaultdict
 from pprint import pprint
 
@@ -34,12 +35,12 @@ class Engine:
             
             # find forks
             for r in forks_of_r[r]:
-                scores[r] += 1
+                scores[r] += 1 / log(2 + len(u_watching[r]))
             # find siblings
             for r in forks_of_r[parent_of_r[r]]:
-                scores[r] += 1
+                scores[r] += 1 / log(2 + len(u_watching[r]))
             # find parents
-            scores[parent_of_r[r]] += 1
+            scores[parent_of_r[r]] += 1 / log(2 + len(u_watching[r]))
 
         # cleanup
         for r in u_watching[user] + [0]:
