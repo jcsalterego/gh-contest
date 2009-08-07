@@ -15,7 +15,8 @@ class Database:
         """Constructor
         """
         self.datadir = datadir
-        self.fields = []
+        self.test_u = []
+        self.fields = ['test_u']
 
         if self.pickle_jar():
             return
@@ -38,9 +39,6 @@ class Database:
             setattr(self, name, defaultdict(datatype))
             self.fields.append(name)
         self.fields.sort()
-
-        "test_u = [user, ...]"
-        self.test_u = []
 
         # collect data
         self.parse_watching()
