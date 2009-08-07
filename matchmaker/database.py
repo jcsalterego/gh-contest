@@ -15,6 +15,7 @@ class Database:
         """Constructor
         """
         self.datadir = datadir
+        self.fields = []
 
         if self.pickle_jar():
             return
@@ -35,6 +36,8 @@ class Database:
         for defn, datatype in fields:
             name, key, _ = defn.split(None, 2)
             setattr(self, name, defaultdict(datatype))
+            self.fields.append(name)
+        self.fields.sort()
 
         "test_u = [user, ...]"
         self.test_u = []
@@ -57,17 +60,9 @@ class Database:
             except:
                 return False
 
-            self.watching_r = d['watching_r']
-            self.u_watching = d['u_watching']
-            self.r_info = d['r_info']
-            self.r_name = d['r_name']
-            self.r_langs = d['r_langs']
-            self.forks_of_r = d['forks_of_r']
-            self.parent_of_r = d['parent_of_r']
-            self.gparent_of_r = d['gparent_of_r']
-            self.lang_by_r = d['lang_by_r']
-            self.u_authoring = d['u_authoring']
-            self.test_u = d['test_u']
+            self.fields = d['fields']
+            for field in self.fields:
+                setattr(self, field, d[field])
 
             return True
         else:
@@ -77,17 +72,9 @@ class Database:
         jar = '/'.join((self.datadir, "pickle.jar"))
         d = {}
 
-        d['watching_r'] = self.watching_r
-        d['u_watching'] = self.u_watching
-        d['r_info'] = self.r_info
-        d['r_name'] = self.r_name
-        d['r_langs'] = self.r_langs
-        d['forks_of_r'] = self.forks_of_r
-        d['parent_of_r'] = self.parent_of_r
-        d['gparent_of_r'] = self.gparent_of_r
-        d['lang_by_r'] = self.lang_by_r
-        d['u_authoring'] = self.u_authoring
-        d['test_u'] = self.test_u
+        for field in self.fields:
+            d[field] = getattr(self, field)
+        d['fields'] = self.fields
 
         jarf = open(jar, 'w')
         pickle.dump(d, jarf)
