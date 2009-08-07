@@ -29,6 +29,7 @@ class Database:
             ("r_info        repos      = author, name, creation", list),
             ("r_name        repos_name = repos",                  list),
             ("r_langs       repos      = lang, kloc",             list),
+            ("r_lang_tuple  repos      = tuple_of_langs",         list),
             ("forks_of_r    parent     = child",                  list),
             ("parent_of_r   child      = parent",                 int),
             ("gparent_of_r  child      = grandparent",            int),
@@ -160,8 +161,23 @@ class Database:
         pairs = [(x, tuple([(int(z[1]), z[0].lower()) for z in y]))
                  for (x, y) in pairs]
 
+        all_langs = defaultdict(bool)
         for repos, langs in pairs:
             for kloc, lang in langs:
+                all_langs[lang] = True
+        all_langs = sorted(all_langs.keys())
+
+        for repos, langs in pairs:
+            r_langs = defaultdict(int)
+            for kloc, lang in langs:
+                lnlog = int(log(kloc + 1))
+                r_langs[lang] = lnlog
+            self.r_lang_tuple[repos] = tuple([r_langs[lang]
+                                              for lang in all_langs])
+
+        for repos, langs in pairs:
+            for kloc, lang in langs:
+
                 try:
                     lnlog = int(log(kloc + 1))
                 except:
