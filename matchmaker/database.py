@@ -19,35 +19,22 @@ class Database:
         if self.pickle_jar():
             return
 
-        "watching_r[repos] = [user, ...]"
-        self.watching_r = defaultdict(list)
-
-        "u_watching[user] = [repos, ...]"
-        self.u_watching = defaultdict(list)
-
-        "r_info[repos] = [(author, name, creation), ...]"
-        self.r_info = {}
-
-        "r_name[repos_name] = [repos, ...]"
-        self.r_name = defaultdict(list)
-
-        "r_langs[repos] = [(lang, kloc), ...]"
-        self.r_langs = defaultdict(list)
-
-        "forks_of_r[parent] = [child, ...]"
-        self.forks_of_r = defaultdict(list)
-
-        "parent_of_r[child] = parent"
-        self.parent_of_r = defaultdict(int)
-
-        "gparent_of_r[child] = grandparent"
-        self.gparent_of_r = defaultdict(int)
-
-        "lang_by_r[lang] = [(kloc, repos), ...]"
-        self.lang_by_r = defaultdict(list)
-
-        "u_authoring[author] = [repos, ...]"
-        self.u_authoring = defaultdict(list)
+        fields = (
+            # dict          key        = values
+            ("watching_r    repos      = user",                   list),
+            ("u_watching    user       = repos",                  list),
+            ("r_info        repos      = author, name, creation", list),
+            ("r_name        repos_name = repos",                  list),
+            ("r_langs       repos      = lang, kloc",             list),
+            ("forks_of_r    parent     = child",                  list),
+            ("parent_of_r   child      = parent",                 int),
+            ("gparent_of_r  child      = grandparent",            int),
+            ("lang_by_r     lang       = kloc, repos",            list),
+            ("u_authoring   author     = repos",                  list),
+        )
+        for defn, datatype in fields:
+            name, key, _ = defn.split(None, 2)
+            setattr(self, name, defaultdict(datatype))
 
         "test_u = [user, ...]"
         self.test_u = []
