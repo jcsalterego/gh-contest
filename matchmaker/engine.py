@@ -5,6 +5,7 @@ import random
 from math import log
 from collections import defaultdict
 from pprint import pprint
+from matchmaker import msg
 
 class Engine:
     def __init__(self, database):
@@ -18,9 +19,16 @@ class Engine:
         db = self.database
         r_list = db.r_info.keys()
 
+        msg("Beginning recommendations")
+        total = len(db.test_u)
+        i = 0
         for u in db.test_u:
             self.recommended[u] = self.user_process(u)
-
+            i += 1
+            if i % 10 == 0:
+                msg("[%3.2f%%] %d/%d processed"
+                    % (float(i)/float(total)*100.0, i, total))
+    
     def user_process(self, user):
         """Returns ten recommendations
         """
