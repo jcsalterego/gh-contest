@@ -9,6 +9,7 @@ import os
 from math import log
 from collections import defaultdict
 from pprint import pprint
+from matchmaker import msg
 
 class Database:
     def __init__(self, datadir):
@@ -70,6 +71,8 @@ class Database:
         jar = '/'.join((self.datadir, "pickle.jar"))
         d = {}
 
+        msg("Filling pickle jar '%s'" % jar)
+
         for field in self.fields:
             d[field] = getattr(self, field)
         d['fields'] = self.fields
@@ -97,16 +100,17 @@ class Database:
                 pprint(dict(getattr(self, prop).items()[:5]))
             print("")
 
-        print(">> test_u")
+        msg("test_u")
         if unabridged:
             pprint(self.test_u)
         else:
             pprint(self.test_u[:5])
-        print("")
 
     def parse_watching(self):
         """Parse data.txt which has main user-repository relationships
         """
+
+        msg("parsing data.txt")
         lines = file('/'.join((self.datadir, "data.txt"))).read().split("\n")
 
         pairs = [[int(x) for x in line.split(":")] for line in lines if line]
@@ -117,6 +121,8 @@ class Database:
     def parse_repos(self):
         """Parse repos.txt which has repository lineage information
         """
+
+        msg("parsing repos.txt")
         lines = file('/'.join((self.datadir, "repos.txt"))).read().split("\n")
 
         pairs = [line.replace(":", ",").split(",") for line in lines if line]
@@ -143,6 +149,8 @@ class Database:
     def parse_lang(self):
         """Get lang.txt which has language composition information
         """
+
+        msg("parsing lang.txt")
         lines = file('/'.join((self.datadir, "lang.txt"))).read().split("\n")
 
         pairs = [line.split(":") for line in lines if line]
@@ -171,5 +179,7 @@ class Database:
     def parse_test(self):
         """Parse test.txt which has test subjects
         """
+
+        msg("parsing test.txt")
         lines = file('/'.join((self.datadir, "test.txt"))).read().split("\n")
         self.test_u = sorted([int(line) for line in lines if line])
