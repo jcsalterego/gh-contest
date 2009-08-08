@@ -22,7 +22,7 @@ class Point:
 
     def __repr__(self):
         """Return a string representation of this Point"""
-        return str(self.coords)
+        return ("<%s: %s>" % (self.reference, str(self.coords)))
 
 class Cluster:
     """The Cluster class represents clusters of points
@@ -61,6 +61,9 @@ class Cluster:
         Assigns a new list of Points to this Cluster
         Returns centroid difference
         """
+        if not points:
+            raise Exception("ILLEGAL: NO POINTS")
+
         old_centroid = self.centroid
         self.points = points
         self.centroid = self.calculateCentroid()
@@ -95,7 +98,9 @@ def kmeans(points, k, cutoff):
     while True:
         # Make a list for each Cluster
         lists = []
-        for c in clusters: lists.append([])
+        for c in clusters:
+            lists.append([])
+
         # For each Point:
         for p in points:
             # Figure out which Cluster's centroid is the nearest
@@ -112,6 +117,8 @@ def kmeans(points, k, cutoff):
         # Record the biggest centroid shift for any Cluster
         biggest_shift = 0.0
         for i in range(len(clusters)):
+            if not lists[i]:
+                continue
             shift = clusters[i].update(lists[i])
             biggest_shift = max(biggest_shift, shift)
         # If the biggest centroid shift is less than the cutoff, stop
