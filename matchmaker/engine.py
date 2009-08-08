@@ -70,7 +70,7 @@ class Engine:
             # find grandparents and uncles/aunts
             if gparent_of_r[r] > 0:
                 gparent = gparent_of_r[r]
-                scores[gparent] += 2
+                scores[gparent] += 3
                 for r1 in forks_of_r[gparent]:
                     scores[r1] += 2 / log(2 + len(u_watching[r1]))
 
