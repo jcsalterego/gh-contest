@@ -169,34 +169,33 @@ class Database:
                 all_langs[lang] = True
         all_langs = sorted(all_langs.keys())
 
-        points = []
-        msg("build r_lang_tuple")
-        for repos, langs in pairs:
-            r_langs = defaultdict(int)
-            for kloc, lang in langs:
-                lnlog = int(log(kloc + 1))
-                r_langs[lang] = lnlog
-            tval = tuple([r_langs[lang] for lang in all_langs])
+#         points = []
+#         msg("build r_lang_tuple")
+#         for repos, langs in pairs:
+#             r_langs = defaultdict(int)
+#             for kloc, lang in langs:
+#                 lnlog = int(log(kloc + 1))
+#                 r_langs[lang] = lnlog
+#             tval = tuple([r_langs[lang] for lang in all_langs])
 
-            points.append(Point(tval, repos))
-            self.r_lang_tuple[repos] = tval
+#             points.append(Point(tval, repos))
+#             self.r_lang_tuple[repos] = tval
 
+#         # k = sample size
+#         k, cutoff = 50, 2
 
-        # k = sample size
-        k, cutoff = 50, 2
+#         msg("build r_lang_clusters of %d points" % len(points))
+#         self.r_lang_clusters = kmeans(points, k, cutoff)
+#         msg("clusters = %d!" % len(self.r_lang_clusters))
 
-        msg("build r_lang_clusters of %d points" % len(points))
-        self.r_lang_clusters = kmeans(points, k, cutoff)
-        msg("clusters = %d!" % len(self.r_lang_clusters))
-
-        msg("normalizing cluster")
-        r_lang_clusters = []
-        for cluster in self.r_lang_clusters:
-            points = []
-            for p in cluster.points:
-                points.append(p.reference)
-            r_lang_clusters.append(sorted(points))
-        self.r_lang_clusters = r_lang_clusters
+#         msg("normalizing cluster")
+#         r_lang_clusters = []
+#         for cluster in self.r_lang_clusters:
+#             points = []
+#             for p in cluster.points:
+#                 points.append(p.reference)
+#             r_lang_clusters.append(sorted(points))
+#         self.r_lang_clusters = r_lang_clusters
 
         msg("build lang_by_r and r_langs")
         for repos, langs in pairs:
