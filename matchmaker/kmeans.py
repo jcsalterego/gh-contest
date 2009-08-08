@@ -95,14 +95,24 @@ def kmeans(points, k, cutoff):
     for p in initial:
         clusters.append(Cluster([p]))
 
+    jter = 0
     while True:
+        print >>sys.stderr, "j =", jter
+        jter += 1
+        
         # Make a list for each Cluster
         lists = []
         for c in clusters:
             lists.append([])
 
+        iter = 0
         # For each Point:
         for p in points:
+
+            if iter % 1000 == 0:
+                print >>sys.stderr, "  j =", jter, ", i =", iter
+            iter += 1
+
             # Figure out which Cluster's centroid is the nearest
             smallest_distance = getDistance(p, clusters[0].centroid)
             index = 0
@@ -122,8 +132,10 @@ def kmeans(points, k, cutoff):
             shift = clusters[i].update(lists[i])
             biggest_shift = max(biggest_shift, shift)
         # If the biggest centroid shift is less than the cutoff, stop
+        print >>sys.stderr, "  biggest shift =", biggest_shift
         if biggest_shift < cutoff:
             break
+
     # Return the list of Clusters
     return clusters
 
