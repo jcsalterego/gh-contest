@@ -183,7 +183,7 @@ class Database:
 
 
         # k = sample size
-        k, cutoff = 100, 0.5
+        k, cutoff = 50, 2
 
         msg("build r_lang_clusters of %d points" % len(points))
         self.r_lang_clusters = kmeans(points, k, cutoff)
@@ -195,7 +195,7 @@ class Database:
             points = []
             for p in cluster.points:
                 points.append(p.reference)
-            r_lang_clusters.append(points)
+            r_lang_clusters.append(sorted(points))
         self.r_lang_clusters = r_lang_clusters
 
         msg("build lang_by_r and r_langs")
