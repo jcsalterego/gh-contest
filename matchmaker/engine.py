@@ -6,6 +6,7 @@ from math import log
 from collections import defaultdict
 from pprint import pprint
 from matchmaker import msg
+from matchmaker.kmeans import *
 
 class Engine:
     def __init__(self, database):
@@ -36,6 +37,8 @@ class Engine:
         r_info = db.r_info
         r_name = db.r_name
         r_langs = db.r_langs
+        r_lang_tuple = db.r_lang_tuple
+        r_lang_clusters = db.r_lang_clusters
         lang_by_r = db.lang_by_r
         u_watching = db.u_watching
         forks_of_r = db.forks_of_r
@@ -91,6 +94,12 @@ class Engine:
                     scores[repos] += 0.5 / log(2 + len(u_watching[repos]))
                     i += 1
 
+            # check clustering
+            for c in r_lang_clusters:
+                if r in c:
+                    for r2 in c:
+                        scores[r2] += 1 / log(2 + len(u_watching[r2]))
+
         # cleanup
         for r in u_watching[user] + [0]:
             if r in scores:
@@ -99,8 +108,6 @@ class Engine:
         scores = [(lambda (x,y): (y,x))(score) for score in scores.items()]
         scores.sort(reverse=True)
         final = [s[1] for s in scores[:10]]
-        if 'production' not in sys.argv:
-            pprint(scores[:10])
         return final
 
     def results(self):

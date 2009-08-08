@@ -10,6 +10,7 @@ from math import log
 from collections import defaultdict
 from pprint import pprint
 from matchmaker import msg
+from matchmaker.kmeans import *
 
 class Database:
     def __init__(self, datadir):
@@ -17,7 +18,8 @@ class Database:
         """
         self.datadir = datadir
         self.test_u = []
-        self.fields = ['test_u']
+        self.r_lang_clusters = []
+        self.fields = ['test_u', 'r_lang_clusters']
 
         if self.pickle_jar():
             return
@@ -167,25 +169,39 @@ class Database:
                 all_langs[lang] = True
         all_langs = sorted(all_langs.keys())
 
+        points = []
+        msg("build r_lang_tuple")
         for repos, langs in pairs:
             r_langs = defaultdict(int)
             for kloc, lang in langs:
                 lnlog = int(log(kloc + 1))
                 r_langs[lang] = lnlog
-            self.r_lang_tuple[repos] = tuple([r_langs[lang]
-                                              for lang in all_langs])
+            tval = tuple([r_langs[lang] for lang in all_langs])
 
+            points.append(Point(tval, repos))
+            self.r_lang_tuple[repos] = tval
+
+
+        # k = sample size
+        k, cutoff = 100, 0.5
+
+        msg("build r_lang_clusters of %d points" % len(points))
+        self.r_lang_clusters = kmeans(points, k, cutoff)
+        msg("clusters = %d!" % len(self.r_lang_clusters))
+
+        msg("normalizing cluster")
+        r_lang_clusters = []
+        for cluster in self.r_lang_clusters:
+            points = []
+            for p in cluster.points:
+                points.append(p.reference)
+            r_lang_clusters.append(points)
+        self.r_lang_clusters = r_lang_clusters
+
+        msg("build lang_by_r and r_langs")
         for repos, langs in pairs:
             for kloc, lang in langs:
-
-                try:
-                    lnlog = int(log(kloc + 1))
-                except:
-                    import sys
-                    print >>sys.stderr, kloc + 1
-                    print >>sys.stderr, log(kloc + 1)
-                    print >>sys.stderr, int(log(kloc + 1))
-                
+                lnlog = int(log(kloc + 1))
                 self.lang_by_r[lang].append((lnlog, repos))
                 self.r_langs[repos].append((lang, lnlog))
 
