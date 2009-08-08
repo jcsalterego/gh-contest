@@ -94,12 +94,6 @@ class Engine:
                     scores[repos] += 0.5 / log(2 + len(u_watching[repos]))
                     i += 1
 
-            # check clustering
-            for c in r_lang_clusters:
-                if r in c:
-                    for r2 in c:
-                        scores[r2] += 1 / log(2 + len(u_watching[r2]))
-
         # cleanup
         for r in u_watching[user] + [0]:
             if r in scores:
