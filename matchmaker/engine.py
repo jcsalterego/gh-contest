@@ -38,6 +38,7 @@ class Engine:
         r_name = db.r_name
         r_langs = db.r_langs
         r_lang_tuple = db.r_lang_tuple
+        r_matrix = db.r_matrix
         top_repos = db.top_repos
         lang_by_r = db.lang_by_r
         u_watching = db.u_watching
@@ -62,7 +63,17 @@ class Engine:
 
         for r in u_watching[user]:
             # loop through all watched repositories
-            
+
+            # find r_matrix neighbors
+            if r in r_matrix:
+                neighbors = [neighbor[0]
+                             for neighbor
+                             in sorted(r_matrix[r].items(),
+                                       reverse=True,
+                                       key=lambda x:x[1])[:10]]
+                for r1 in neighbors:
+                    scores[r1] += 2 / log(2 + len(watching_r[r1]))
+
             # find forks
             for r1 in forks_of_r[r]:
                 scores[r1] += 2 / log(2 + len(watching_r[r1]))
