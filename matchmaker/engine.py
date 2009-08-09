@@ -38,7 +38,6 @@ class Engine:
         r_name = db.r_name
         r_langs = db.r_langs
         r_lang_tuple = db.r_lang_tuple
-        r_lang_clusters = db.r_lang_clusters
         top_repos = db.top_repos
         lang_by_r = db.lang_by_r
         u_watching = db.u_watching
