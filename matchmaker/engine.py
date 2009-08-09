@@ -99,9 +99,9 @@ class Engine:
                 continue
 
         # cleanup
-        for r in u_watching[user] + [0]:
-            if r in scores:
-                del scores[r]
+        #for r in u_watching[user] + [0]:
+        #    if r in scores:
+        #        del scores[r]
 
         scores = [(lambda (x,y): (y,x))(score) for score in scores.items()]
         scores.sort(reverse=True)
