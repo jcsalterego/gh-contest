@@ -94,7 +94,7 @@ class Engine:
                 for lnlog2, repos in lang_by_r[lang]:
                     if i == 20:
                         break
-                    scores[repos] += ((float(lnlog) / (float(total_lnlog)))
+                    scores[repos] += (2.0 * (float(lnlog) / (float(total_lnlog)))
                                       / log(2 + len(u_watching[repos])))
                     i += 1
 
