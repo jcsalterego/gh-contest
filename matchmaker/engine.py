@@ -84,7 +84,7 @@ class Engine:
             lnlog = lang_r[lang] = num_lang_r
             for r1, lnlog2 in lang_by_r[lang]:
                 if lnlog2 == lnlog:
-                    scores[r1] += 2 / log(2)
+                    scores[r1] += 5
 
         for r in u_watching[user]:
             # loop through all watched repositories
