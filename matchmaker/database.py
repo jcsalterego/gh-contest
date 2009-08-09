@@ -20,7 +20,8 @@ class Database:
         self.test_u = []
         self.top_repos = []
         self.r_matrix = {}
-        self.fields = ['test_u', 'top_repos', 'r_matrix']
+        self.u_matrix = {}
+        self.fields = ['test_u', 'top_repos', 'r_matrix', 'u_matrix']
 
         if self.pickle_jar():
             return
@@ -143,6 +144,28 @@ class Database:
                         self.r_matrix[j] = {i: 1}
                     else:
                         self.r_matrix[j][i] += 1
+
+        msg("making u_matrix")
+        for users in self.u_watching.values():
+            users.sort()
+            len_users = len(users)
+            for i in xrange(len_users):
+                if i not in self.u_matrix:
+                    self.u_matrix[i] = {}
+
+                for j in xrange(i + 1, len_users):
+
+                    if j in self.u_matrix[i]:
+                        self.u_matrix[i][j] += 1
+                    else:
+                        self.u_matrix[i][j] = 1
+
+                    if j not in self.u_matrix:
+                        self.u_matrix[j] = {i: 1}
+                    elif i not in self.u_matrix[j]:
+                        self.u_matrix[j] = {i: 1}
+                    else:
+                        self.u_matrix[j][i] += 1
 
         msg("making top_repos")
         top_repos = sorted(self.watching_r.items(),
