@@ -86,16 +86,12 @@ class Engine:
                 for r1 in u_authoring[author]:
                     scores[r1] += 2 / log(2 + len(u_watching[r1]))
 
-            total_lnlog = sum([x[1] for x in r_langs[r]])
-            if not total_lnlog:
-                continue
             for lang, lnlog in r_langs[r]:
                 i = 0
                 for lnlog2, repos in lang_by_r[lang]:
-                    if i == 20:
+                    if i == 50:
                         break
-                    scores[repos] += (2.0 * (float(lnlog) / (float(total_lnlog)))
-                                      / log(2 + len(u_watching[repos])))
+                    scores[repos] += 0.5 / log(2 + len(u_watching[repos]))
                     i += 1
 
         # cleanup
