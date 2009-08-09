@@ -72,6 +72,20 @@ class Engine:
                 for r1 in u_watching[u1]:
                     scores[r1] += 2 / log(2)
 
+        # generate language profile
+        num_lang_r = 0
+        lang_r = defaultdict(int)
+        for r in u_watching[user]:
+            if r in r_langs:
+                num_lang_r += 1
+                for lang, lnlog in r_langs[r]:
+                    lang_r[lang] += lnlog
+        for lang in lang_r:
+            lnlog = lang_r[lang] = num_lang_r
+            for r1, lnlog2 in lang_by_r[lang]:
+                if lnlog2 == lnlog:
+                    scores[r1] += 2 / log(2)
+
         for r in u_watching[user]:
             # loop through all watched repositories
 
