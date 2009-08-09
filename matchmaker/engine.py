@@ -113,9 +113,11 @@ class Engine:
                               in sorted(orig_scores.items())[:10]]
 
             if num_scores < 10:
-                top_scores = list(set(top_scores) | set(top_repos))[:10]
-                msg("new top scores")
-                pprint(top_scores, stream=sys.stderr)
+                for r in top_repos:
+                    if r not in top_scores:
+                        top_scores.append(r)
+                    if len(top_repos) >= 10:
+                        break
 
         return top_scores
 
