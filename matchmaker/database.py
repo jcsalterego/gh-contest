@@ -224,9 +224,9 @@ class Database:
         msg("build lang_by_r and r_langs")
         for repos, langs in pairs:
             for kloc, lang in langs:
-                lnlog = int(log(kloc + 1))
-                self.lang_by_r[lang].append((lnlog, repos))
-                self.r_langs[repos].append((lang, lnlog))
+                lnloc = int(log(kloc + 1))
+                self.lang_by_r[lang].append((lnloc, repos))
+                self.r_langs[repos].append((lang, lnloc))
 
         for lang in self.lang_by_r.keys():
             self.lang_by_r[lang].sort(key=lambda x:x[1])

@@ -78,12 +78,12 @@ class Engine:
         for r in u_watching[user]:
             if r in r_langs:
                 num_lang_r += 1
-                for lang, lnlog in r_langs[r]:
-                    lang_r[lang] += lnlog
+                for lang, lnloc in r_langs[r]:
+                    lang_r[lang] += lnloc
         for lang in lang_r:
-            lnlog = lang_r[lang] = num_lang_r
-            for r1, lnlog2 in lang_by_r[lang]:
-                if lnlog2 == lnlog:
+            lnloc = lang_r[lang] = num_lang_r
+            for r1, lnloc2 in lang_by_r[lang]:
+                if lnloc2 == lnloc:
                     scores[r1] += 5
 
         for r in u_watching[user]:
