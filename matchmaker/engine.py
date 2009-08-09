@@ -48,6 +48,18 @@ class Engine:
         u_authoring = db.u_authoring
 
         scores = defaultdict(int)
+
+        # find favorite author (by simple majority)
+        fav_author = None
+        authors = defaultdict(int)
+        for r in u_watching[user]:
+            if r in r_info:
+                author = r_info[r][0]
+                authors[author] += 1
+        authors = sorted(authors.items(), reverse=True, key=lambda x:x[1])
+        if len(authors) > 1 and authors[0][1] > authors[1][1]:
+            fav_author = authors[0][0]
+
         for r in u_watching[user]:
             # loop through all watched repositories
             
@@ -85,7 +97,10 @@ class Engine:
             if r in r_info:
                 author = r_info[r][0]
                 for r1 in sorted(u_authoring[author], reverse=True):
-                    scores[r1] += 3.0 / log(2 + len(u_watching[r1]))
+                    if author == fav_author:
+                        scores[r1] += 9.0 / log(2 + len(u_watching[r1]))
+                    else:
+                        scores[r1] += 3.0 / log(2 + len(u_watching[r1]))
 
         # cleanup
         for r in u_watching[user] + [0]:
