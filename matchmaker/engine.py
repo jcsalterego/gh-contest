@@ -84,8 +84,11 @@ class Engine:
             # find others by author
             if r in r_info:
                 author = r_info[r][0]
-                for r1 in u_authoring[author]:
-                    scores[r1] += 2 / log(2 + len(u_watching[r1]))
+                num_authored = len(u_authoring[author])
+                iter = 1
+                for r1 in sorted(u_authoring[author], reverse=True):
+                    weight = float(iter) / num_authored * 3.0
+                    scores[r1] += weight / log(2 + len(u_watching[r1]))
 
         # cleanup
         for r in u_watching[user] + [0]:
