@@ -159,18 +159,12 @@ class Engine:
             msg("  avg: %6.2f - 1st: %6.2f - last: %6.2f"
                 % (avg_score, scores[0][1], scores[num_scores - 1][1]))
 
-            if avg_score < 5:
-                msg("    hijack!")
-                top_scores = [s[0]
-                              for s
-                              in sorted(orig_scores.items())[:10]]
-
-            if num_scores < 10:
-                for r in top_repos:
-                    if r not in top_scores:
-                        top_scores.append(r)
-                    if len(top_repos) >= 10:
-                        break
+        if num_scores < 10:
+            for r in top_repos:
+                if r not in top_scores:
+                    top_scores.append(r)
+                if len(top_scores) >= 10:
+                    break
 
         return top_scores
 
