@@ -39,6 +39,7 @@ class Engine:
         r_langs = db.r_langs
         r_lang_tuple = db.r_lang_tuple
         r_lang_clusters = db.r_lang_clusters
+        top_repos = db.top_repos
         lang_by_r = db.lang_by_r
         u_watching = db.u_watching
         forks_of_r = db.forks_of_r
@@ -110,6 +111,11 @@ class Engine:
                 top_scores = [s[0]
                               for s
                               in sorted(orig_scores.items())[:10]]
+
+            if num_scores < 10:
+                top_scores = list(set(top_scores) | set(top_repos))[:10]
+                msg("new top scores")
+                pprint(top_scores, stream=sys.stderr)
 
         return top_scores
 

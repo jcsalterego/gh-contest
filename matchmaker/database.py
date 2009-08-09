@@ -19,7 +19,8 @@ class Database:
         self.datadir = datadir
         self.test_u = []
         self.r_lang_clusters = []
-        self.fields = ['test_u', 'r_lang_clusters']
+        self.top_repos = []
+        self.fields = ['test_u', 'r_lang_clusters', 'top_repos']
 
         if self.pickle_jar():
             return
@@ -120,6 +121,12 @@ class Database:
         for user, repos in pairs:
             self.watching_r[repos].append(user)
             self.u_watching[user].append(repos)
+
+        msg("making top_repos")
+        top_repos = sorted(self.watching_r.items(),
+                           key=lambda x:len(x[1]),
+                           reverse=True)
+        self.top_repos = [repos[0] for repos in top_repos[:30]]
 
     def parse_repos(self):
         """Parse repos.txt which has repository lineage information
