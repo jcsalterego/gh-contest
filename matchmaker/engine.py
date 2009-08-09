@@ -91,6 +91,7 @@ class Engine:
             if r in scores:
                 del scores[r]
 
+        orig_scores = scores
         scores = sorted(scores.items(), reverse=True, key=lambda x:x[1])
         top_scores = [repos[0] for repos in scores[:10]]
         num_scores = len(top_scores)
@@ -103,6 +104,13 @@ class Engine:
                          / num_scores)
             msg("  avg: %6.2f - 1st: %6.2f - last: %6.2f"
                 % (avg_score, scores[0][1], scores[num_scores - 1][1]))
+
+            if avg_score < 5:
+                msg("    hijack!")
+                top_scores = [s[0]
+                              for s
+                              in sorted(orig_scores.items())[:10]]
+
         return top_scores
 
     def results(self):
