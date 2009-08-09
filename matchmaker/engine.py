@@ -83,7 +83,7 @@ class Engine:
         for lang in lang_r:
             lnloc = lang_r[lang] = num_lang_r
             for r1, lnloc2 in lang_by_r[lang]:
-                if lnloc2 == lnloc:
+                if abs(lnloc2 - lnloc) <= 2:
                     scores[r1] += 5
 
         for r in u_watching[user]:
