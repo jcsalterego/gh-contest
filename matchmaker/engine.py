@@ -60,6 +60,10 @@ class Engine:
         if len(authors) > 1 and authors[0][1] > authors[1][1]:
             fav_author = authors[0][0]
 
+        # top repos boost
+        for r in top_repos:
+            scores[r] += 2 / log(2 + len(u_watching[r]))
+
         for r in u_watching[user]:
             # loop through all watched repositories
             
