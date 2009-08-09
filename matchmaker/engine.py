@@ -70,7 +70,7 @@ class Engine:
                                    key=lambda x:x[1])[:10]]
             for u1 in neighbors:
                 for r1 in u_watching[u1]:
-                    scores[r1] += 2 / log(2 + len(watching_r[r1]))
+                    scores[r1] += 2 / log(2)
 
         for r in u_watching[user]:
             # loop through all watched repositories
