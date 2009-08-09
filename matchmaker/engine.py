@@ -54,6 +54,9 @@ class Engine:
             for r1 in forks_of_r[r]:
                 scores[r1] += 2 / log(2 + len(u_watching[r1]))
 
+            if len(scores) > 10:
+                continue
+
             # find parents and siblings
             if parent_of_r[r] > 0:
                 parent = parent_of_r[r]
@@ -66,6 +69,9 @@ class Engine:
                         author = r_info[r1][0]
                         for r2 in u_authoring[author]:
                             scores[r2] += 1 / log(2 + len(u_watching[r2]))
+
+            if len(scores) > 10:
+                continue
 
             # find grandparents and uncles/aunts
             if gparent_of_r[r] > 0:
@@ -80,11 +86,17 @@ class Engine:
                         for r2 in u_authoring[author]:
                             scores[r2] += 2 / log(2 + len(u_watching[r2]))
 
+            if len(scores) > 10:
+                continue
+
             # find others by author
             if r in r_info:
                 author = r_info[r][0]
                 for r1 in u_authoring[author]:
                     scores[r1] += 2 / log(2 + len(u_watching[r1]))
+
+            if len(scores) > 10:
+                continue
 
         # cleanup
         for r in u_watching[user] + [0]:
