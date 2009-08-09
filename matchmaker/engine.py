@@ -91,10 +91,9 @@ class Engine:
             if r in scores:
                 del scores[r]
 
-        scores = [(lambda (x,y): (y,x))(score) for score in scores.items()]
-        scores.sort(reverse=True)
-        final = [s[1] for s in scores[:10]]
-        return final
+        scores = [repos[0] for repos in
+                  sorted(scores.items(), reverse=True, key=lambda x:x[1])]
+        return scores[:10]
 
     def results(self):
         lines = []
