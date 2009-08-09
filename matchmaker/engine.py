@@ -91,9 +91,19 @@ class Engine:
             if r in scores:
                 del scores[r]
 
-        scores = [repos[0] for repos in
-                  sorted(scores.items(), reverse=True, key=lambda x:x[1])]
-        return scores[:10]
+        scores = sorted(scores.items(), reverse=True, key=lambda x:x[1])
+        top_scores = [repos[0] for repos in scores[:10]]
+        num_scores = len(top_scores)
+        
+        if not num_scores:
+            msg("  no scores!")
+        else:
+            avg_score = (float(sum([repos[1]
+                                    for repos in scores[:num_scores]]))
+                         / num_scores)
+            msg("  avg: %6.2f - 1st: %6.2f - last: %6.2f"
+                % (avg_score, scores[0][1], scores[num_scores - 1][1]))
+        return top_scores
 
     def results(self):
         lines = []
