@@ -70,7 +70,7 @@ class Engine:
                              for neighbor
                              in sorted(r_matrix[r].items(),
                                        reverse=True,
-                                       key=lambda x:x[1])[:10]]
+                                       key=lambda x:x[1])[:5]]
                 for r1 in neighbors:
                     scores[r1] += 2 / log(2 + len(watching_r[r1]))
 
