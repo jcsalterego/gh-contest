@@ -64,6 +64,7 @@ class Engine:
         for r in u_watching[user]:
             # loop through all watched repositories
 
+            """ # COMMENTED OUT
             # find r_matrix neighbors
             if r in r_matrix:
                 neighbors = [neighbor[0]
@@ -73,6 +74,7 @@ class Engine:
                                        key=lambda x:x[1])[:5]]
                 for r1 in neighbors:
                     scores[r1] += 2 / log(2 + len(watching_r[r1]))
+            """
 
             # find forks
             for r1 in forks_of_r[r]:
