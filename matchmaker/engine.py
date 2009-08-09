@@ -72,7 +72,7 @@ class Engine:
                 gparent = gparent_of_r[r]
                 scores[gparent] += 3
                 for r1 in forks_of_r[gparent]:
-                    scores[r1] += 3 / log(2 + len(u_watching[r1]))
+                    scores[r1] += 2 / log(2 + len(u_watching[r1]))
 
                     # find others by author of gparent
                     if r1 in r_info:
