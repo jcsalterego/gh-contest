@@ -146,14 +146,14 @@ class Database:
                         self.r_matrix[j][i] += 1
 
         msg("making u_matrix")
-        for users in self.u_watching.values():
-            users.sort()
-            len_users = len(users)
-            for i in xrange(len_users):
+        for repos in self.u_watching.values():
+            repos.sort()
+            len_repos = len(repos)
+            for i in xrange(len_repos):
                 if i not in self.u_matrix:
                     self.u_matrix[i] = {}
 
-                for j in xrange(i + 1, len_users):
+                for j in xrange(i + 1, len_repos):
 
                     if j in self.u_matrix[i]:
                         self.u_matrix[i][j] += 1

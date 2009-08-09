@@ -42,6 +42,7 @@ class Engine:
         top_repos = db.top_repos
         lang_by_r = db.lang_by_r
         u_watching = db.u_watching
+        u_matrix = db.u_matrix
         watching_r = db.watching_r
         forks_of_r = db.forks_of_r
         parent_of_r = db.parent_of_r
@@ -60,6 +61,16 @@ class Engine:
         authors = sorted(authors.items(), reverse=True, key=lambda x:x[1])
         if len(authors) > 1 and authors[0][1] > authors[1][1]:
             fav_author = authors[0][0]
+
+        if user in u_matrix:
+            neighbors = [neighbor[0]
+                         for neighbor
+                         in sorted(u_matrix[user].items(),
+                                   reverse=True,
+                                   key=lambda x:x[1])[:10]]
+            for u1 in neighbors:
+                for r1 in u_watching[u1]:
+                    scores[r1] += 2 / log(2 + len(watching_r[r1]))
 
         for r in u_watching[user]:
             # loop through all watched repositories
