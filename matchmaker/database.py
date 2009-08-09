@@ -171,7 +171,7 @@ class Database:
         top_repos = sorted(self.watching_r.items(),
                            key=lambda x:len(x[1]),
                            reverse=True)
-        self.top_repos = [repos[0] for repos in top_repos[:30]]
+        self.top_repos = [repos[0] for repos in top_repos[:50]]
 
     def parse_repos(self):
         """Parse repos.txt which has repository lineage information
