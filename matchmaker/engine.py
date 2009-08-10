@@ -34,6 +34,12 @@ class Engine:
         """Returns ten recommendations
         """
         db = self.database
+
+        if user not in db.u_watching:
+            # blank son of a gun!
+            msg("No repos, setting to default top_repos")
+            return db.top_repos[:10]
+
         r_info = db.r_info
         r_name = db.r_name
         r_langs = db.r_langs
@@ -41,8 +47,8 @@ class Engine:
         r_matrix = db.r_matrix
         top_repos = db.top_repos
         lang_by_r = db.lang_by_r
-        u_watching = db.u_watching
         u_matrix = db.u_matrix
+        u_watching = db.u_watching
         watching_r = db.watching_r
         forks_of_r = db.forks_of_r
         parent_of_r = db.parent_of_r
