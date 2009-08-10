@@ -56,7 +56,9 @@ class Engine:
         u_authoring = db.u_authoring
 
         scores = defaultdict(int)
-
+        for r in top_repos[:15]:
+            scores[r] = 1
+        
         # find favorite author (by simple majority)
         fav_authors = {}
         authors = defaultdict(int)
