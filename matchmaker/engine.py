@@ -158,7 +158,7 @@ class Engine:
 
                 if authors[author] > 3:
                     del scores[iter]
-                elif names[name] > 3:
+                elif names[name] > 5:
                     del scores[iter]
 
                 iter += 1
