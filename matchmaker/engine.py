@@ -86,20 +86,26 @@ class Engine:
                 if abs(lnloc2 - lnloc) <= 1:
                     scores[r1] += 5
 
+        matrix_repos = defaultdict(int)
+        if user in u_matrix:
+            for u1 in u_matrix[user]:
+                for r1 in u_watching[u1]:
+                    matrix_repos[r1] += 1
+
+        for r in u_watching[user]:
+            if r in r_matrix:
+                for r1 in r_matrix[r]:
+                    matrix_repos[r1] += 1
+
+        matrix_repos = [r
+                        for r
+                        in matrix_repos.items()
+                        if r[1] > 1]
+        for r, score in matrix_repos:
+            scores[r] += 2
+
         for r in u_watching[user]:
             # loop through all watched repositories
-
-            """ # COMMENTED OUT
-            # find r_matrix neighbors
-            if r in r_matrix:
-                neighbors = [neighbor[0]
-                             for neighbor
-                             in sorted(r_matrix[r].items(),
-                                       reverse=True,
-                                       key=lambda x:x[1])[:5]]
-                for r1 in neighbors:
-                    scores[r1] += 2 + log(2 + len(watching_r[r1]))
-            """
 
             # find forks
             for r1 in forks_of_r[r]:
