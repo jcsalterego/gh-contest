@@ -114,7 +114,7 @@ class Engine:
             # find parents and siblings
             if parent_of_r[r] > 0:
                 parent = parent_of_r[r]
-                scores[parent] += 2
+                scores[parent] += 4
                 for r1 in forks_of_r[parent]:
                     scores[r1] += 2 + log(2 + len(watching_r[r1]))
 
@@ -127,7 +127,7 @@ class Engine:
             # find grandparents and uncles/aunts
             if gparent_of_r[r] > 0:
                 gparent = gparent_of_r[r]
-                scores[gparent] += 3
+                scores[gparent] += 6
                 for r1 in forks_of_r[gparent]:
                     scores[r1] += 2 + log(2 + len(watching_r[r1]))
 
