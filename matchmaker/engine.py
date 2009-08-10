@@ -147,6 +147,22 @@ class Engine:
 
         orig_scores = scores
         scores = sorted(scores.items(), reverse=True, key=lambda x:x[1])
+        authors = defaultdict(int)
+        names = defaultdict(int)
+        iter = 0
+        for r, score in scores:
+            if r in r_info:
+                author, name, _ = r_info[r]
+                authors[author] += 1
+                names[name] += 1
+
+                if authors[author] > 3:
+                    del scores[iter]
+                elif names[name] > 3:
+                    del scores[iter]
+
+                iter += 1
+
         top_scores = [repos[0] for repos in scores[:10]]
         num_scores = len(top_scores)
         
