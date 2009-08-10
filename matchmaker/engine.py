@@ -67,6 +67,9 @@ class Engine:
         authors = sorted(authors.items(), reverse=True, key=lambda x:x[1])
         if len(authors) > 1 and authors[0][1] > authors[1][1]:
             fav_author = authors[0][0]
+            msg("favs: %s %d, %s %d"
+                % (authors[0][0], authors[0][1],
+                   authors[1][0], authors[1][1]))
 
         if user in u_matrix:
             neighbors = [neighbor[0]
