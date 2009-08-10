@@ -155,6 +155,7 @@ class Engine:
         scores = sorted(scores.items(), reverse=True, key=lambda x:x[1])
         authors = defaultdict(int)
         names = defaultdict(int)
+        purge = []
         iter = 0
         for r, score in scores:
             if r in r_info:
@@ -163,11 +164,13 @@ class Engine:
                 names[name] += 1
 
                 if authors[author] > 3:
-                    del scores[iter]
+                    purge.append(iter)
                 elif names[name] > 5:
-                    del scores[iter]
+                    purge.append(iter)
+            iter += 1
 
-                iter += 1
+        for i in sorted(purge, reverse=True):
+            del scores[i]
 
         top_scores = [repos[0] for repos in scores[:10]]
         num_scores = len(top_scores)
