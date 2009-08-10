@@ -102,7 +102,7 @@ class Engine:
                         in matrix_repos.items()
                         if r[1] > 1]
         for r, score in matrix_repos:
-            scores[r] += 2
+            scores[r] += 4
 
         for r in u_watching[user]:
             # loop through all watched repositories
