@@ -64,23 +64,21 @@ class Engine:
             if r in r_info:
                 author = r_info[r][0]
                 authors[author] += 1
-        authors = sorted(authors.items(), reverse=True, key=lambda x:x[1])
-        if len(authors) > 1 and authors[0][1] > authors[1][1]:
-            if authors[0][1] > 10:
-                # perhaps this is the user, grab all of their repos
-                fav_authors[authors[0][0]] = 12
 
-                if authors[0][1] > 5:
-                    fav_authors[authors[0][0]] = 6
-                
-            elif (authors[0][1] - authors[1][1] > 3):
-                # big lead
-                fav_authors[authors[0][0]] = 9
-                fav_authors[authors[0][1]] = 6
+        # grab top 3 authors
+        authors = sorted(authors.items(), reverse=True, key=lambda x:x[1])[:3]
+        if len(authors) > 1:
+            total = float(sum([x[1] for x in authors]))
+            
+            for a_name, a_score in authors:
+                if a_score == 1:
+                    continue
 
-            msg("favs: %s %d, %s %d"
-                % (authors[0][0], authors[0][1],
-                   authors[1][0], authors[1][1]))
+                # partition 16 appropriately
+                fav_authors[a_name] = float(a_score) / float(total) * 16.0
+
+        msg(fav_authors.items())
+        msg("-" * 78)
 
         if user in u_matrix:
             neighbors = [neighbor[0]
