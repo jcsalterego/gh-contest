@@ -65,6 +65,7 @@ class Engine:
                 author = r_info[r][0]
                 authors[author] += 1
 
+        """ # ignore fav_authors
         # grab top 3 authors
         authors = sorted(authors.items(), reverse=True, key=lambda x:x[1])[:3]
         if len(authors) > 1:
@@ -79,6 +80,7 @@ class Engine:
 
         msg(fav_authors.items())
         msg("-" * 78)
+        """
 
         if user in u_matrix:
             neighbors = [neighbor[0]
