@@ -98,47 +98,47 @@ class Engine:
                                        reverse=True,
                                        key=lambda x:x[1])[:5]]
                 for r1 in neighbors:
-                    scores[r1] += 2 / log(2 + len(watching_r[r1]))
+                    scores[r1] += 2 + log(2 + len(watching_r[r1]))
             """
 
             # find forks
             for r1 in forks_of_r[r]:
-                scores[r1] += 2 / log(2 + len(watching_r[r1]))
+                scores[r1] += 2 + log(2 + len(watching_r[r1]))
 
             # find parents and siblings
             if parent_of_r[r] > 0:
                 parent = parent_of_r[r]
                 scores[parent] += 2
                 for r1 in forks_of_r[parent]:
-                    scores[r1] += 2 / log(2 + len(watching_r[r1]))
+                    scores[r1] += 2 + log(2 + len(watching_r[r1]))
 
                     # find others by author of parent
                     if r1 in r_info:
                         author = r_info[r1][0]
                         for r2 in u_authoring[author]:
-                            scores[r2] += 1 / log(2 + len(watching_r[r2]))
+                            scores[r2] += 1 + log(2 + len(watching_r[r2]))
 
             # find grandparents and uncles/aunts
             if gparent_of_r[r] > 0:
                 gparent = gparent_of_r[r]
                 scores[gparent] += 3
                 for r1 in forks_of_r[gparent]:
-                    scores[r1] += 2 / log(2 + len(watching_r[r1]))
+                    scores[r1] += 2 + log(2 + len(watching_r[r1]))
 
                     # find others by author of gparent
                     if r1 in r_info:
                         author = r_info[r1][0]
                         for r2 in u_authoring[author]:
-                            scores[r2] += 2 / log(2 + len(watching_r[r2]))
+                            scores[r2] += 2 + log(2 + len(watching_r[r2]))
 
             # find others by author
             if r in r_info:
                 author = r_info[r][0]
                 for r1 in sorted(u_authoring[author], reverse=True):
                     if author == fav_author:
-                        scores[r1] += 9.0 / log(2 + len(watching_r[r1]))
+                        scores[r1] += 9.0 + log(2 + len(watching_r[r1]))
                     else:
-                        scores[r1] += 3.0 / log(2 + len(watching_r[r1]))
+                        scores[r1] += 3.0 + log(2 + len(watching_r[r1]))
 
         # cleanup
         for r in u_watching[user] + [0]:
