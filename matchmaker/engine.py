@@ -58,7 +58,7 @@ class Engine:
         scores = defaultdict(int)
 
         # find favorite author (by simple majority)
-        fav_author = None
+        fav_authors = {}
         authors = defaultdict(int)
         for r in u_watching[user]:
             if r in r_info:
@@ -66,7 +66,18 @@ class Engine:
                 authors[author] += 1
         authors = sorted(authors.items(), reverse=True, key=lambda x:x[1])
         if len(authors) > 1 and authors[0][1] > authors[1][1]:
-            fav_author = authors[0][0]
+            if authors[0][1] > 10:
+                # perhaps this is the user, grab all of their repos
+                fav_authors[authors[0][0]] = 12
+
+                if authors[0][1] > 5:
+                    fav_authors[authors[0][0]] = 6
+                
+            elif (authors[0][1] - authors[1][1] > 3):
+                # big lead
+                fav_authors[authors[0][0]] = 9
+                fav_authors[authors[0][1]] = 6
+
             msg("favs: %s %d, %s %d"
                 % (authors[0][0], authors[0][1],
                    authors[1][0], authors[1][1]))
@@ -150,8 +161,8 @@ class Engine:
             if r in r_info:
                 author = r_info[r][0]
                 for r1 in sorted(u_authoring[author], reverse=True):
-                    if author == fav_author:
-                        scores[r1] += 9.0 + log(2 + len(watching_r[r1]))
+                    if author in fav_authors:
+                        scores[r1] += fav_authors[author]
                     else:
                         scores[r1] += 3.0 + log(2 + len(watching_r[r1]))
 
