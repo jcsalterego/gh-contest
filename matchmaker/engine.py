@@ -90,7 +90,7 @@ class Engine:
                                    key=lambda x:x[1])[:10]]
             for u1 in neighbors:
                 for r1 in u_watching[u1]:
-                    scores[r1] += 2 / log(2)
+                    scores[r1] += 2 / log(2, 10)
 
         # generate language profile
         num_lang_r = 0
@@ -140,33 +140,33 @@ class Engine:
 
             # find forks
             for r1 in forks_of_r[r]:
-                scores[r1] += 2 * log(2 + len(watching_r[r1]))
+                scores[r1] += 2 * log(2 + len(watching_r[r1]), 10)
 
             # find parents and siblings
             if parent_of_r[r] > 0:
                 parent = parent_of_r[r]
                 scores[parent] += 4
                 for r1 in forks_of_r[parent]:
-                    scores[r1] += 2 * log(2 + len(watching_r[r1]))
+                    scores[r1] += 2 * log(2 + len(watching_r[r1]), 10)
 
                     # find others by author of parent
                     if r1 in r_info:
                         author = r_info[r1][0]
                         for r2 in u_authoring[author]:
-                            scores[r2] += 1 * log(2 + len(watching_r[r2]))
+                            scores[r2] += 1 * log(2 + len(watching_r[r2]), 10)
 
             # find grandparents and uncles/aunts
             if gparent_of_r[r] > 0:
                 gparent = gparent_of_r[r]
                 scores[gparent] += 6
                 for r1 in forks_of_r[gparent]:
-                    scores[r1] += 2 * log(2 + len(watching_r[r1]))
+                    scores[r1] += 2 * log(2 + len(watching_r[r1]), 10)
 
                     # find others by author of gparent
                     if r1 in r_info:
                         author = r_info[r1][0]
                         for r2 in u_authoring[author]:
-                            scores[r2] += 2 * log(2 + len(watching_r[r2]))
+                            scores[r2] += 2 * log(2 + len(watching_r[r2]), 10)
 
             # find others by author
             if r in r_info:
@@ -175,7 +175,7 @@ class Engine:
                     if author in fav_authors:
                         scores[r1] += fav_authors[author]
                     else:
-                        scores[r1] += 3.0 * log(2 + len(watching_r[r1]))
+                        scores[r1] += 3.0 * log(2 + len(watching_r[r1]), 10)
 
         # cleanup
         for r in u_watching[user] + [0]:
