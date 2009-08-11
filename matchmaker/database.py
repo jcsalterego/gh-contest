@@ -23,9 +23,9 @@ class Database:
         self.datadir = datadir
         self.test_u = []
         self.top_repos = []
-        self.r_matrix = {}
-        self.u_matrix = {}
-        self.fields = ['test_u', 'top_repos', 'r_matrix', 'u_matrix']
+        self.r_matrix = {} # special pickling
+        self.u_matrix = {} # special pickling
+        self.fields = ['test_u', 'top_repos']
 
         if self.pickle_jar():
             return
@@ -51,14 +51,15 @@ class Database:
         self.fields.sort()
 
         # collect data
+        self.parse_test()
         self.parse_watching()
         self.parse_repos()
         self.parse_lang()
-        self.parse_test()
 
         self.fill_pickle_jar()
 
     def pickle_jar(self):
+
         jar = '/'.join((self.datadir, "pickle.jar"))
         if os.path.exists(jar):
             try:
@@ -71,10 +72,38 @@ class Database:
             self.fields = d['fields']
             for field in self.fields:
                 setattr(self, field, d[field])
-
-            return True
         else:
             return False
+
+        for matrix in ("u_matrix", "r_matrix"):
+            jar = '/'.join((self.datadir, "%s.jar" % matrix))
+            matrix = getattr(self, matrix)
+
+            try:
+                jarf = file(jar, "r")
+                msg("Loading pickle jar '%s'" % jar)
+            except:
+                return False
+            line = jarf.readline().strip()
+            while line:
+                i, info = line.split(" ")
+                i = int(i)
+
+                matrix[i] = {}
+
+                elems = info.split(",")
+                for el in elems:
+                    if not el:
+                        continue
+                    words = el.split("=")
+                    if len(words) == 1:
+                        matrix[i][int(words[0])] = 1
+                    else:
+                        matrix[i][int(words[0])] = int(words[1])
+                line = jarf.readline().strip()
+            jarf.close()
+
+        return True
 
     def fill_pickle_jar(self):
         jar = '/'.join((self.datadir, "pickle.jar"))
@@ -89,6 +118,22 @@ class Database:
         jarf = open(jar, 'w')
         pickle.dump(d, jarf)
         jarf.close()
+
+        for matrix in ("u_matrix", "r_matrix"):
+            jar = '/'.join((self.datadir, "%s.jar" % matrix))
+            matrix = getattr(self, matrix)
+            msg("Filling pickle jar '%s'" % jar)
+
+            jarf = open(jar, 'w')
+            for i in matrix:
+                jarf.write("%d " % i)
+                for k, v in matrix[i].items():
+                    if v == 1:
+                        jarf.write("%d," % k)
+                    else:
+                        jarf.write("%d=%d," % (k, v))
+                jarf.write("\n")
+            jarf.close()
 
     def summary(self, unabridged=False):
         props = ("watching_r "
@@ -122,30 +167,66 @@ class Database:
         msg("parsing data.txt")
         lines = file('/'.join((self.datadir, "data.txt"))).read().split("\n")
 
+        test_r = set()
         pairs = [[int(x) for x in line.split(":")] for line in lines if line]
         for user, repos in pairs:
             self.watching_r[repos].append(user)
             self.u_watching[user].append(repos)
 
-        msg("making r_matrix")
-        for users in self.watching_r.values():
-            for r_i, r_j in permutations(users, 2):
-                if r_i not in self.r_matrix:
-                    self.r_matrix[r_i] = {r_j: 1}
-                elif r_j not in self.r_matrix[r_i]:
-                    self.r_matrix[r_i][r_j] = 1
-                else:
-                    self.r_matrix[r_i][r_j] += 1
+            if user in self.test_u:
+                test_r.add(repos)
 
+        iter = 0
         msg("making u_matrix")
-        for repos in self.u_watching.values():
-            for u_i, u_j in permutations(repos, 2):
-                if u_i not in self.u_matrix:
-                    self.u_matrix[u_i] = {u_j: 1}
-                elif u_j not in self.u_matrix[u_i]:
-                    self.u_matrix[u_i][u_j] = 1
+        for users in self.watching_r.values():
+            test = []
+            non_test = []
+
+            for u in users:
+                if u in self.test_u:
+                    test.append(u)
                 else:
-                    self.u_matrix[u_i][u_j] += 1
+                    non_test.append(u)
+            if not test:
+                continue
+
+            for u_i in test:
+                for u_j in non_test:
+                    if u_i not in self.u_matrix:
+                        self.u_matrix[u_i] = {u_j: 1}
+                    elif u_j not in self.u_matrix[u_i]:
+                        self.u_matrix[u_i][u_j] = 1
+                    else:
+                        self.u_matrix[u_i][u_j] += 1
+
+                    iter += 1
+                    if iter % 100000 == 0:
+                        msg("iter %d" % iter)
+
+        iter = 0
+        msg("making r_matrix")
+        for repos in self.u_watching.values():
+            test = []
+            non_test = []
+
+            for r in repos:
+                if r in test_r:
+                    test.append(r)
+                else:
+                    non_test.append(r)
+
+            for r_i in test:
+                for r_j in non_test:
+                    if r_i not in self.r_matrix:
+                        self.r_matrix[r_i] = {r_j: 1}
+                    elif r_j not in self.r_matrix[r_i]:
+                        self.r_matrix[r_i][r_j] = 1
+                    else:
+                        self.r_matrix[r_i][r_j] += 1
+
+                    iter += 1
+                    if iter % 100000 == 0:
+                        msg("iter %d" % iter)
 
         msg("making top_repos")
         top_repos = sorted(self.watching_r.items(),
