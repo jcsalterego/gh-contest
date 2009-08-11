@@ -90,7 +90,7 @@ class Engine:
                                    key=lambda x:x[1])[:10]]
             for u1 in neighbors:
                 for r1 in u_watching[u1]:
-                    scores[r1] += 2 / log(2, 10)
+                    scores[r1] += 2 * log(2 + len(watching_r[r1]), 10)
 
         # generate language profile
         num_lang_r = 0
