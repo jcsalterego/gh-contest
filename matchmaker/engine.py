@@ -153,7 +153,7 @@ class Engine:
                     if r1 in r_info:
                         author = r_info[r1][0]
                         for r2 in u_authoring[author]:
-                            scores[r2] += 1 * log(2 + len(watching_r[r2]), 10)
+                            scores[r2] += log(2 + len(watching_r[r2]), 10)
 
             # find grandparents and uncles/aunts
             if gparent_of_r[r] > 0:
