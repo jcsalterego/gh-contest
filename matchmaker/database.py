@@ -4,6 +4,10 @@ try:
     import cPickle as pickle
 except:
     import pickle
+try:
+    from itertools import permutations
+except:
+    from matchmaker.utils import permutations
 import os
 
 from math import log
@@ -125,47 +129,23 @@ class Database:
 
         msg("making r_matrix")
         for users in self.watching_r.values():
-            users.sort()
-            len_users = len(users)
-            for i in xrange(len_users):
-                if i not in self.r_matrix:
-                    self.r_matrix[i] = {}
-
-                for j in xrange(i + 1, len_users):
-
-                    if j in self.r_matrix[i]:
-                        self.r_matrix[i][j] += 1
-                    else:
-                        self.r_matrix[i][j] = 1
-
-                    if j not in self.r_matrix:
-                        self.r_matrix[j] = {i: 1}
-                    elif i not in self.r_matrix[j]:
-                        self.r_matrix[j] = {i: 1}
-                    else:
-                        self.r_matrix[j][i] += 1
+            for r_i, r_j in permutations(users, 2):
+                if r_i not in self.r_matrix:
+                    self.r_matrix[r_i] = {r_j: 1}
+                elif r_j not in self.r_matrix[r_i]:
+                    self.r_matrix[r_i][r_j] = 1
+                else:
+                    self.r_matrix[r_i][r_j] += 1
 
         msg("making u_matrix")
         for repos in self.u_watching.values():
-            repos.sort()
-            len_repos = len(repos)
-            for i in xrange(len_repos):
-                if i not in self.u_matrix:
-                    self.u_matrix[i] = {}
-
-                for j in xrange(i + 1, len_repos):
-
-                    if j in self.u_matrix[i]:
-                        self.u_matrix[i][j] += 1
-                    else:
-                        self.u_matrix[i][j] = 1
-
-                    if j not in self.u_matrix:
-                        self.u_matrix[j] = {i: 1}
-                    elif i not in self.u_matrix[j]:
-                        self.u_matrix[j] = {i: 1}
-                    else:
-                        self.u_matrix[j][i] += 1
+            for u_i, u_j in permutations(repos, 2):
+                if u_i not in self.u_matrix:
+                    self.u_matrix[u_i] = {u_j: 1}
+                elif u_j not in self.u_matrix[u_i]:
+                    self.u_matrix[u_i][u_j] = 1
+                else:
+                    self.u_matrix[u_i][u_j] += 1
 
         msg("making top_repos")
         top_repos = sorted(self.watching_r.items(),
