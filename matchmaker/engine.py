@@ -106,6 +106,7 @@ class Engine:
                 if abs(lnloc2 - lnloc) <= 1:
                     scores[r1] += 5
 
+        """ # ignore matrices
         matrix_repos = defaultdict(int)
         if user in u_matrix:
             for u1 in u_matrix[user]:
@@ -122,6 +123,7 @@ class Engine:
                         in matrix_repos.items()]
         for r, score in matrix_repos:
             scores[r] += 4
+        """
 
         mpr = defaultdict(int)
         for r in u_watching[user]:
