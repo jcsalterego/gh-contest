@@ -87,7 +87,7 @@ class Engine:
                          for neighbor
                          in sorted(u_matrix[user].items(),
                                    reverse=True,
-                                   key=lambda x:x[1])]
+                                   key=lambda x:x[1])[:15]]
             for u1 in neighbors:
                 for r1 in u_watching[u1]:
                     scores[r1] += 3 * log(2 + len(watching_r[r1]), 10)
