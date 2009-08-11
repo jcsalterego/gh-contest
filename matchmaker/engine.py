@@ -59,13 +59,13 @@ class Engine:
 
         # find favorite author (by simple majority)
         fav_authors = {}
+        """ # ignore fav_authors
         authors = defaultdict(int)
         for r in u_watching[user]:
             if r in r_info:
                 author = r_info[r][0]
                 authors[author] += 1
 
-        """ # ignore fav_authors
         # grab top 3 authors
         authors = sorted(authors.items(), reverse=True, key=lambda x:x[1])[:3]
         if len(authors) > 1:
