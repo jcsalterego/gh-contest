@@ -129,11 +129,7 @@ class Engine:
         for r in u_watching[user]:
             for u1 in watching_r[r]:
                 for r1 in u_watching[u1]:
-                    mpr[r1] += 2
-
-                    for u2 in watching_r[r1][:5]:
-                        for r2 in u_watching[u2][:5]:
-                            mpr[r2] += 1
+                    mpr[r1] += 1
 
         mpr = sorted(mpr.items(),
                      reverse=True,
