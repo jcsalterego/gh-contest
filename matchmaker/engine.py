@@ -199,8 +199,10 @@ class Engine:
 
         # cleanup
         for r in u_watching[user] + [0]:
-            if r in scores:
+            try:
                 del scores[r]
+            except:
+                pass
 
         orig_scores = scores
         scores = sorted(scores.items(), reverse=True, key=lambda x:x[1])
