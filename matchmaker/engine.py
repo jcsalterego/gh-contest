@@ -83,25 +83,6 @@ class Engine:
         msg("-" * 78)
         """
 
-        conn = mysqldb.connect(host='127.0.0.1',
-                               user='root',
-                               passwd='',
-                               db='matrix')
-        c = conn.cursor()
-
-        c.execute(("SELECT u2, val "
-                   "FROM u_matrix "
-                   "WHERE u1=%d "
-                   "ORDER BY val DESC "
-                   "LIMIT 5")
-                  % user)
-        results = c.fetchall()
-
-        u1 = user
-        for u2, val in results:
-            for r1 in u_watching[u2]:
-                scores[r1] += 3 * log(val + len(watching_r[r1]), 10)
-
         # generate language profile
         num_lang_r = 0
         lang_r = defaultdict(int)
@@ -147,8 +128,36 @@ class Engine:
         for r, score in mpr:
             scores[r] += 4
 
+        conn = mysqldb.connect(host='127.0.0.1',
+                               user='root',
+                               passwd='',
+                               db='matrix')
+        c = conn.cursor()
+
         for r in u_watching[user]:
             # loop through all watched repositories
+
+            # check r_matrix
+
+            results = []
+            c.execute(("SELECT r2, val "
+                       "FROM r_matrix "
+                       "WHERE r1=%d "
+                       "ORDER BY val DESC "
+                       "LIMIT 5")
+                      % r)
+            results += list(c.fetchall())
+            c.execute(("SELECT r1, val "
+                       "FROM r_matrix "
+                       "WHERE r2=%d "
+                       "ORDER BY val DESC "
+                       "LIMIT 5")
+                      % r)
+            results += list(c.fetchall())
+            results.sort(reverse=True, key=lambda x:x[1])
+
+            for r1, val in results[:5]:
+                scores[r1] += 2 * log(val + len(watching_r[r1]), 10)
 
             # find forks
             for r1 in forks_of_r[r]:
