@@ -134,11 +134,32 @@ class Engine:
                                db='matrix')
         c = conn.cursor()
 
+        # check u_matrix
+        results = []
+        c.execute(("SELECT u2, val "
+                   "FROM u_matrix2 "
+                   "WHERE u1=%d "
+                   "ORDER BY val DESC "
+                   "LIMIT 3")
+                  % user)
+        results += list(c.fetchall())
+        c.execute(("SELECT u1, val "
+                   "FROM u_matrix2 "
+                   "WHERE u2=%d "
+                   "ORDER BY val DESC "
+                   "LIMIT 3")
+                  % user)
+        results += list(c.fetchall())
+        results.sort(reverse=True, key=lambda x:x[1])
+
+        for u1, val in results[:5]:
+            for r1 in u_watching[u1]:
+                scores[r1] += log(val + len(watching_r[r1]), 10)
+
         for r in u_watching[user]:
             # loop through all watched repositories
 
             # check r_matrix
-
             results = []
             c.execute(("SELECT r2, val "
                        "FROM r_matrix2 "
