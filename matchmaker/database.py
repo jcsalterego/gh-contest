@@ -74,38 +74,9 @@ class Database:
             self.fields = d['fields']
             for field in self.fields:
                 setattr(self, field, d[field])
+            return True
         else:
             return False
-
-        for matrix in ("u_matrix", "r_matrix"):
-            jar = '/'.join((self.datadir, "%s.jar" % matrix))
-            matrix = getattr(self, matrix)
-
-            try:
-                jarf = file(jar, "r")
-                msg("Loading pickle jar '%s'" % jar)
-            except:
-                return False
-            line = jarf.readline().strip()
-            while line:
-                i, info = line.split(" ")
-                i = int(i)
-
-                matrix[i] = {}
-
-                elems = info.split(",")
-                for el in elems:
-                    if not el:
-                        continue
-                    words = el.split("=")
-                    if len(words) == 1:
-                        matrix[i][int(words[0])] = 1
-                    else:
-                        matrix[i][int(words[0])] = int(words[1])
-                line = jarf.readline().strip()
-            jarf.close()
-
-        return True
 
     def fill_pickle_jar(self):
         jar = '/'.join((self.datadir, "pickle.jar"))
@@ -120,22 +91,6 @@ class Database:
         jarf = open(jar, 'w')
         pickle.dump(d, jarf)
         jarf.close()
-
-        for matrix in ("u_matrix", "r_matrix"):
-            jar = '/'.join((self.datadir, "%s.jar" % matrix))
-            matrix = getattr(self, matrix)
-            msg("Filling pickle jar '%s'" % jar)
-
-            jarf = open(jar, 'w')
-            for i in matrix:
-                jarf.write("%d " % i)
-                for k, v in matrix[i].items():
-                    if v == 1:
-                        jarf.write("%d," % k)
-                    else:
-                        jarf.write("%d=%d," % (k, v))
-                jarf.write("\n")
-            jarf.close()
 
     def summary(self, unabridged=False):
         props = ("watching_r "
