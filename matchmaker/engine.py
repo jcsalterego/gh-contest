@@ -144,18 +144,19 @@ class Engine:
                        "FROM r_matrix2 "
                        "WHERE r1=%d "
                        "ORDER BY val DESC "
-                       "LIMIT 5")
+                       "LIMIT 10")
                       % r)
             results += list(c.fetchall())
             c.execute(("SELECT r1, val "
                        "FROM r_matrix2 "
                        "WHERE r2=%d "
                        "ORDER BY val DESC "
-                       "LIMIT 5")
+                       "LIMIT 10")
                       % r)
             results += list(c.fetchall())
             results.sort(reverse=True, key=lambda x:x[1])
 
+            results = [r1 for r1 in results if r1[0] not in top_repos]
             for r1, val in results[:5]:
                 scores[r1] += 2 * log(val + len(watching_r[r1]), 10)
 
