@@ -114,7 +114,6 @@ class Engine:
                         in matrix_repos.items()]
         for r, score in matrix_repos:
             scores[r] += 4
-        """
 
         mpr = defaultdict(int)
         for r in u_watching[user]:
@@ -127,6 +126,7 @@ class Engine:
                      key=lambda x:x[1])[:10]
         for r, score in mpr:
             scores[r] += 4
+        """
 
         conn = mysqldb.connect(host='127.0.0.1',
                                user='root',
