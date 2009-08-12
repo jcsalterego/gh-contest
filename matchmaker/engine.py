@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import sys
+import MySQLdb as mysqldb
 import random
+import sys
 from math import log
 from collections import defaultdict
 from pprint import pprint
@@ -82,15 +83,24 @@ class Engine:
         msg("-" * 78)
         """
 
-        if user in u_matrix:
-            neighbors = [neighbor[0]
-                         for neighbor
-                         in sorted(u_matrix[user].items(),
-                                   reverse=True,
-                                   key=lambda x:x[1])[:15]]
-            for u1 in neighbors:
-                for r1 in u_watching[u1]:
-                    scores[r1] += 3 * log(2 + len(watching_r[r1]), 10)
+        conn = mysqldb.connect(host='127.0.0.1',
+                               user='root',
+                               passwd='',
+                               db='matrix')
+        c = conn.cursor()
+
+        c.execute(("SELECT u2, val "
+                   "FROM u_matrix "
+                   "WHERE u1=%d "
+                   "ORDER BY val DESC "
+                   "LIMIT 5")
+                  % user)
+        results = c.fetchall()
+
+        u1 = user
+        for u2, val in results:
+            for r1 in u_watching[u2]:
+                scores[r1] += 3 * log(val + len(watching_r[r1]), 10)
 
         # generate language profile
         num_lang_r = 0
