@@ -189,6 +189,7 @@ class Engine:
                         for r2 in u_authoring[author]:
                             scores[r2] += 2 * log(2 + len(watching_r[r2]), 10)
 
+            """
             # find others by author
             if r in r_info:
                 author = r_info[r][0]
@@ -197,6 +198,7 @@ class Engine:
                         scores[r1] += fav_authors[author]
                     else:
                         scores[r1] += 3.0 * log(2 + len(watching_r[r1]), 10)
+            """
 
         # cleanup
         for r in u_watching[user] + [0]:
