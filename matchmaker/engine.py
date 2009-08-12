@@ -93,14 +93,14 @@ class Engine:
                    "FROM u_matrix "
                    "WHERE u1=%d "
                    "ORDER BY val DESC "
-                   "LIMIT 5")
+                   "LIMIT 20")
                   % user)
         results = c.fetchall()
 
         u1 = user
         for u2, val in results:
             for r1 in u_watching[u2]:
-                scores[r1] += 3 * log(val + len(watching_r[r1]), 10)
+                scores[r1] += 2 * log(val + len(watching_r[r1]), 10)
 
         # generate language profile
         num_lang_r = 0
