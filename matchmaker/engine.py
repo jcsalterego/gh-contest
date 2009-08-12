@@ -97,51 +97,48 @@ class Engine:
                 if abs(lnloc2 - lnloc) <= 1:
                     scores[r1] += 5
 
-        # generate top r_matrix
+        """ # ignore matrices
+        matrix_repos = defaultdict(int)
+        if user in u_matrix:
+            for u1 in u_matrix[user]:
+                for r1 in u_watching[u1]:
+                    matrix_repos[r1] += 1
+
+        for r in u_watching[user]:
+            if r in r_matrix:
+                for r1 in r_matrix[r]:
+                    matrix_repos[r1] += 1
+
+        matrix_repos = [r
+                        for r
+                        in matrix_repos.items()]
+        for r, score in matrix_repos:
+            scores[r] += 4
+        """
+
+        mpr = defaultdict(int)
+        for r in u_watching[user]:
+            for u1 in watching_r[r]:
+                for r1 in u_watching[u1]:
+                    mpr[r1] += 1
+
+        mpr = sorted(mpr.items(),
+                     reverse=True,
+                     key=lambda x:x[1])[:10]
+        for r, score in mpr:
+            scores[r] += 4
+
         conn = mysqldb.connect(host='127.0.0.1',
                                user='root',
                                passwd='',
                                db='matrix')
         c = conn.cursor()
 
-        if user in u_watching:
-            results = []
-
-            for i in xrange(len(u_watching[user]) / 5):
-                chunk = u_watching[user][5*i:5*i+5]
-                repos_list = ",".join([str(r) for r in chunk])
-                c.execute(("SELECT r1,r2,val FROM r_matrix2 "
-                           "WHERE r1 in (%s) OR r2 in (%s) "
-                           "ORDER BY val DESC ")
-                          % (repos_list, repos_list))
-                results_ = c.fetchall()
-                results_ = [r for r in results if results[3] > 5]
-                results += results_
-                
-            uniq = defaultdict(int)
-            for r1, r2, val in results:
-                left = r1 in u_watching[user]
-                right = r2 in u_watching[user]
-                if left and right:
-                    continue
-
-                if left:
-                    uniq[r2] += val
-                else:
-                    uniq[r1] += val
-
-            uniq = [x for x in uniq.items() if x > 1]
-            uniq = sorted(uniq, reverse=True, key=lambda x:x[1])[:20]
-
-            for r1, val in uniq:
-                scores[int(r1)] = 2 * log(val + len(watching_r[r1]))
-
         for r in u_watching[user]:
             # loop through all watched repositories
 
             # check r_matrix
 
-            """
             results = []
             c.execute(("SELECT r2, val "
                        "FROM r_matrix2 "
@@ -161,7 +158,6 @@ class Engine:
 
             for r1, val in results[:5]:
                 scores[r1] += 2 * log(val + len(watching_r[r1]), 10)
-            """
 
             # find forks
             for r1 in forks_of_r[r]:
