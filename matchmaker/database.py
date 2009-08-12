@@ -8,6 +8,7 @@ try:
     from itertools import permutations
 except:
     from matchmaker.utils import permutations
+import MySQLdb as mysqldb
 import os
 
 from math import log
@@ -26,6 +27,7 @@ class Database:
         self.r_matrix = {} # special pickling
         self.u_matrix = {} # special pickling
         self.fields = ['test_u', 'top_repos']
+        self.save_db = False
 
         if self.pickle_jar():
             return
@@ -176,22 +178,29 @@ class Database:
             if user in self.test_u:
                 test_r.add(repos)
 
+        msg("making top_repos")
+        top_repos = sorted(self.watching_r.items(),
+                           key=lambda x:len(x[1]),
+                           reverse=True)
+        self.top_repos = [repos[0] for repos in top_repos[:50]]
+
+        if not self.save_db:
+            return
+
+        conn = mysqldb.connect(host='127.0.0.1',
+                               user='root',
+                               passwd='',
+                               db='matrix')
+        c = conn.cursor()
+
         iter = 0
         msg("making u_matrix")
         for users in self.watching_r.values():
-            test = []
-            non_test = []
+            users.sort()
+            for i in xrange(len(users)):
+                for j in xrange(i + 1, len(users)):
+                    u_i, u_j = users[i], users[j]
 
-            for u in users:
-                if u in self.test_u:
-                    test.append(u)
-                else:
-                    non_test.append(u)
-            if not test:
-                continue
-
-            for u_i in test:
-                for u_j in non_test:
                     if u_i not in self.u_matrix:
                         self.u_matrix[u_i] = {u_j: 1}
                     elif u_j not in self.u_matrix[u_i]:
@@ -201,22 +210,37 @@ class Database:
 
                     iter += 1
                     if iter % 100000 == 0:
-                        msg("iter %d" % iter)
+                        msg("[] iter %d" % iter)
+        iter = 0
+        msg("saving u_matrix")
+        values = []
+        for u_i in self.u_matrix:
+            for u_j in self.u_matrix[u_i]:
+                values.append("(%d,%d,%d)"
+                              % (u_i, u_j, self.u_matrix[u_i][u_j]))
+
+                iter += 1
+                if iter % 5000 == 0:
+                    sql = "".join(("INSERT INTO u_matrix(u1,u2,val) VALUES",
+                                   ",".join(values)))
+                    c.execute(sql)
+                    values = []
+                if iter % 10000 == 0:
+                    msg("DB iter %d" % iter)
+                    conn.commit()
+        if values:
+            sql = "".join(("INSERT INTO u_matrix ",
+                           ",".join(values)))
+            c.execute(sql)
 
         iter = 0
         msg("making r_matrix")
         for repos in self.u_watching.values():
-            test = []
-            non_test = []
+            repos.sort()
+            for i in xrange(len(repos)):
+                for j in xrange(i + 1, len(repos)):
+                    r_i, r_j = repos[i], repos[j]
 
-            for r in repos:
-                if r in test_r:
-                    test.append(r)
-                else:
-                    non_test.append(r)
-
-            for r_i in test:
-                for r_j in non_test:
                     if r_i not in self.r_matrix:
                         self.r_matrix[r_i] = {r_j: 1}
                     elif r_j not in self.r_matrix[r_i]:
@@ -226,13 +250,28 @@ class Database:
 
                     iter += 1
                     if iter % 100000 == 0:
-                        msg("iter %d" % iter)
+                        msg("[] iter %d" % iter)
+        iter = 0
+        msg("saving r_matrix")
+        values = []
+        for r_i in self.r_matrix:
+            for r_j in self.r_matrix[r_i]:
+                values.append("(%d,%d,%d)"
+                              % (r_i, r_j, self.r_matrix[r_i][r_j]))
 
-        msg("making top_repos")
-        top_repos = sorted(self.watching_r.items(),
-                           key=lambda x:len(x[1]),
-                           reverse=True)
-        self.top_repos = [repos[0] for repos in top_repos[:50]]
+                iter += 1
+                if iter % 5000 == 0:
+                    sql = "".join(("INSERT INTO r_matrix(r1,r2,val) VALUES",
+                                   ",".join(values)))
+                    c.execute(sql)
+                    values = []
+                if iter % 10000 == 0:
+                    msg("DB iter %d" % iter)
+                    conn.commit()
+        if values:
+            sql = "".join(("INSERT INTO r_matrix ",
+                           ",".join(values)))
+            c.execute(sql)
 
     def parse_repos(self):
         """Parse repos.txt which has repository lineage information
