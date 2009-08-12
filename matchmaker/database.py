@@ -279,7 +279,7 @@ class Database:
         msg("build lang_by_r and r_langs")
         for repos, langs in pairs:
             for kloc, lang in langs:
-                lnloc = int(log(kloc + 1))
+                lnloc = int(log(kloc + 1, 10))
                 self.lang_by_r[lang].append((lnloc, repos))
                 self.r_langs[repos].append((lang, lnloc))
 
