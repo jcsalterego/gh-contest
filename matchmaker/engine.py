@@ -19,12 +19,11 @@ class Engine:
 
     def process(self):
         db = self.database
-        r_list = db.r_info.keys()
 
         msg("Beginning recommendations")
         total = len(db.test_u)
         i = 0
-        for u in db.test_u:
+        for u in sorted(db.test_u, reverse=True):
             self.recommended[u] = self.user_process(u)
             i += 1
             if i % 10 == 0:
