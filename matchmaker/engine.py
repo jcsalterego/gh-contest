@@ -207,7 +207,7 @@ class Engine:
                     prefix = "-".join(prefixes[0:i])
                     if prefix in r_prefixes:
                         for r2 in r_prefixes[prefix]:
-                            scores[r2] += (0.5 * i
+                            scores[r2] += (0.25 * i
                                            * log(1 + len(watching_r[r1]), 10))
 
         # cleanup
