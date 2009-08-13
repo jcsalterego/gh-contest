@@ -40,6 +40,7 @@ class Database:
             ("r_name        repos_name = repos",                  list),
             ("r_langs       repos      = lang, kloc",             list),
             ("r_lang_tuple  repos      = tuple_of_langs",         list),
+            ("r_prefixes    prefix     = repos",                  list),
             ("forks_of_r    parent     = child",                  list),
             ("parent_of_r   child      = parent",                 int),
             ("gparent_of_r  child      = grandparent",            int),
@@ -250,6 +251,18 @@ class Database:
             self.r_info[repos] = (author, name, creation)
             self.u_authoring[author].append(repos)
             self.r_name[name].append(repos)
+
+            words = name.lower().replace("-", "_").replace(".", "_")
+            words = words.split("_")
+            prefixes = [w for w in words if len(w) > 2][:-1]
+            if not prefixes:
+                continue
+
+            for i in xrange(1, len(prefixes)):
+                prefix = "-".join(prefixes[0:i])
+                if prefix in ('the', 'test', 'php', 'acts'):
+                    continue
+                self.r_prefixes[prefix].append(repos)
 
         for repos_gen1, repos_gen2 in self.parent_of_r.items():
             if repos_gen2 in self.parent_of_r:

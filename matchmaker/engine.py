@@ -45,6 +45,7 @@ class Engine:
         r_langs = db.r_langs
         r_lang_tuple = db.r_lang_tuple
         r_matrix = db.r_matrix
+        r_prefixes = db.r_prefixes
         top_repos = db.top_repos
         lang_by_r = db.lang_by_r
         u_matrix = db.u_matrix
@@ -80,8 +81,9 @@ class Engine:
 
         msg(fav_authors.items())
         msg("-" * 78)
+        """        
+        
         """
-
         # generate language profile
         num_lang_r = 0
         lang_r = defaultdict(int)
@@ -95,6 +97,7 @@ class Engine:
             for r1, lnloc2 in lang_by_r[lang]:
                 if abs(lnloc2 - lnloc) <= 1:
                     scores[r1] += 2.5
+        """
 
         """ # ignore matrices
         matrix_repos = defaultdict(int)
@@ -188,11 +191,24 @@ class Engine:
                         for r2 in u_authoring[author]:
                             scores[r2] += log(2 + len(watching_r[r2]), 10)
 
-            # find others by author
+            # find others by author and prefixes
             if r in r_info:
-                author = r_info[r][0]
+                author, name = r_info[r][0], r_info[r][1]
                 for r1 in sorted(u_authoring[author], reverse=True):
                     scores[r1] += 1.5 * log(2 + len(watching_r[r1]), 10)
+
+                words = name.lower().replace("-", "_").replace(".", "_")
+                words = words.split("_")
+                prefixes = [w for w in words if len(w) > 2][:-1]
+                if not prefixes:
+                    continue
+
+                for i in xrange(1, len(prefixes)):
+                    prefix = "-".join(prefixes[0:i])
+                    if prefix in r_prefixes:
+                        msg("prefix match! %s" % prefix)
+                        for r2 in r_prefixes[prefix]:
+                            scores[r2] += 1.5 * log(1 + len(watching_r[r1]))
 
         # cleanup
         for r in u_watching[user] + [0]:
