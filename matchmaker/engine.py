@@ -208,7 +208,8 @@ class Engine:
                     if prefix in r_prefixes:
                         msg("prefix match! %s" % prefix)
                         for r2 in r_prefixes[prefix]:
-                            scores[r2] += 1.5 * log(1 + len(watching_r[r1]))
+                            scores[r2] += (float(i)
+                                           * log(1 + len(watching_r[r1]), 10))
 
         # cleanup
         for r in u_watching[user] + [0]:
