@@ -191,19 +191,24 @@ class Engine:
                         for r2 in u_authoring[author]:
                             scores[r2] += log(2 + len(watching_r[r2]), 10)
 
-            # find others by author and prefixes
+            # find others by author, name and prefixes
             if r in r_info:
                 author, name = r_info[r][0], r_info[r][1]
                 for r1 in sorted(u_authoring[author], reverse=True):
                     scores[r1] += 1.5 * log(2 + len(watching_r[r1]), 10)
 
+                # check names
+                if name in r_name:
+                    for r1 in r_name[name]:
+                        scores[r1] += 0.5 * log(1 + len(watching_r[r1]), 10)
+
                 words = name.lower().replace("-", "_").replace(".", "_")
                 words = words.split("_")
-                prefixes = [w for w in words if len(w) > 2][:-1]
+                prefixes = [w for w in words if len(w) > 2]
                 if not prefixes:
                     continue
 
-                for i in xrange(1, len(prefixes)):
+                for i in xrange(1, len(prefixes) - 1):
                     prefix = "-".join(prefixes[0:i])
                     if prefix in r_prefixes:
                         for r2 in r_prefixes[prefix]:
