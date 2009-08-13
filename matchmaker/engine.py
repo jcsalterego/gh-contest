@@ -200,7 +200,7 @@ class Engine:
                 # check names
                 if name in r_name:
                     for r1 in r_name[name]:
-                        scores[r1] += 0.5 * log(1 + len(watching_r[r1]), 10)
+                        scores[r1] += log(1 + len(watching_r[r1]), 10)
 
                 words = name.lower().replace("-", "_").replace(".", "_")
                 words = words.split("_")
