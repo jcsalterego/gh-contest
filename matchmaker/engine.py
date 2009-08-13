@@ -206,9 +206,8 @@ class Engine:
                 for i in xrange(1, len(prefixes)):
                     prefix = "-".join(prefixes[0:i])
                     if prefix in r_prefixes:
-                        msg("prefix match! %s" % prefix)
                         for r2 in r_prefixes[prefix]:
-                            scores[r2] += (float(i)
+                            scores[r2] += (0.5 * i
                                            * log(1 + len(watching_r[r1]), 10))
 
         # cleanup
