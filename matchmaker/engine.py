@@ -83,21 +83,18 @@ class Engine:
         """
 
         # generate language profile
-        lang_r = defaultdict(list)
+        num_lang_r = 0
+        lang_r = defaultdict(int)
         for r in u_watching[user]:
             if r in r_langs:
+                num_lang_r += 1
                 for lang, lnloc in r_langs[r]:
-                    lang_r[lang].append(lnloc)
-
-        lang_r_ = {}
+                    lang_r[lang] += lnloc
         for lang in lang_r:
-            lang_r_[lang] = float(sum(lang_r[lang])) / len(lang_r[lang])
-        lang_r = lang_r_
-
-        for lang in lang_r:
-            for lnloc2, r1 in lang_by_r[lang]:
-                if lnloc == lnloc2:
-                    scores[r1] += log(1 + len(watching_r[r1]), 10)
+            lnloc = lang_r[lang] = num_lang_r
+            for r1, lnloc2 in lang_by_r[lang]:
+                if abs(lnloc2 - lnloc) <= 1:
+                    scores[r1] += 2.5
 
         """ # ignore matrices
         matrix_repos = defaultdict(int)
@@ -212,9 +209,6 @@ class Engine:
         iter = 0
         for r, score in scores:
             if r in r_info:
-                if not r_info[r]:
-                    continue
-                
                 author, name, _ = r_info[r]
                 authors[author] += 1
                 names[name] += 1
