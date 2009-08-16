@@ -44,7 +44,6 @@ class Engine:
         r_name = db.r_name
         r_langs = db.r_langs
         r_lang_tuple = db.r_lang_tuple
-        r_matrix = db.r_matrix
         r_prefixes = db.r_prefixes
         top_repos = db.top_repos
         lang_by_r = db.lang_by_r
@@ -97,37 +96,6 @@ class Engine:
             for r1, lnloc2 in lang_by_r[lang]:
                 if abs(lnloc2 - lnloc) <= 1:
                     scores[r1] += 2.5
-        """
-
-        """ # ignore matrices
-        matrix_repos = defaultdict(int)
-        if user in u_matrix:
-            for u1 in u_matrix[user]:
-                for r1 in u_watching[u1]:
-                    matrix_repos[r1] += 1
-
-        for r in u_watching[user]:
-            if r in r_matrix:
-                for r1 in r_matrix[r]:
-                    matrix_repos[r1] += 1
-
-        matrix_repos = [r
-                        for r
-                        in matrix_repos.items()]
-        for r, score in matrix_repos:
-            scores[r] += 4
-
-        mpr = defaultdict(int)
-        for r in u_watching[user]:
-            for u1 in watching_r[r]:
-                for r1 in u_watching[u1]:
-                    mpr[r1] += 1
-
-        mpr = sorted(mpr.items(),
-                     reverse=True,
-                     key=lambda x:x[1])[:10]
-        for r, score in mpr:
-            scores[r] += 4
         """
 
         conn = mysqldb.connect(host='127.0.0.1',
