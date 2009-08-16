@@ -211,6 +211,36 @@ class Engine:
         for i in sorted(purge, reverse=True):
             del scores[i]
 
+        if len(scores) > 3000:
+            output = []
+            mean = sum([x[1] for x in scores]) / len(scores)
+            std_dev = (sum([(x[1] - mean) ** 2
+                            for x in scores])
+                       / len(scores)) ** 0.5
+            cutoff = mean + std_dev * 2.5
+            scores_ = sorted([x for x in scores if x[1] > cutoff])
+            if scores_:
+                scores = scores_
+    
+            fh = file("debug.txt", "a")
+            output.append("user: %5d" % user)
+            output.append("total: %5d" % len(scores))
+            output.append("")
+    
+            for r, score in scores:
+                if r in r_info:
+                    output.append(">> %6.3f %8d: %-20s %-50s %s"
+                                  % (score, r,
+                                     r_info[r][0],
+                                     r_info[r][1],
+                                     r_info[r][2]))
+                else:
+                    output.append(">> %4.2f %8d"
+                                  % (score, r))
+            output.append("")
+            fh.write("\n".join(output))
+            fh.close()
+
         top_scores = [repos[0] for repos in scores[:10]]
         num_scores = len(top_scores)
         
