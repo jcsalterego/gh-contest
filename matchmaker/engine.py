@@ -211,7 +211,7 @@ class Engine:
         for i in sorted(purge, reverse=True):
             del scores[i]
 
-        if len(scores) > 2500:
+        if len(scores) > 3000:
             output = []
             mean = sum([x[1] for x in scores]) / len(scores)
             std_dev = (sum([(x[1] - mean) ** 2
