@@ -57,6 +57,32 @@ class Engine:
 
         scores = defaultdict(int)
 
+        # find favorite author (by simple majority)
+        fav_authors = {}
+        """ # ignore fav_authors
+        authors = defaultdict(int)
+        for r in u_watching[user]:
+            if r in r_info:
+                author = r_info[r][0]
+                authors[author] += 1
+
+        # grab top 3 authors
+        authors = sorted(authors.items(), reverse=True, key=lambda x:x[1])[:3]
+        if len(authors) > 1:
+            total = float(sum([x[1] for x in authors]))
+            
+            for a_name, a_score in authors:
+                if a_score == 1:
+                    continue
+
+                # partition 16 appropriately
+                fav_authors[a_name] = float(a_score) / float(total) * 16.0
+
+        msg(fav_authors.items())
+        msg("-" * 78)
+        """        
+        
+        """
         # generate language profile
         num_lang_r = 0
         lang_r = defaultdict(int)
@@ -70,6 +96,7 @@ class Engine:
             for r1, lnloc2 in lang_by_r[lang]:
                 if abs(lnloc2 - lnloc) <= 1:
                     scores[r1] += 2.5
+        """
 
         conn = mysqldb.connect(host='127.0.0.1',
                                user='root',
