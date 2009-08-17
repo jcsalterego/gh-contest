@@ -118,14 +118,14 @@ class Engine:
                        "FROM r_matrix2 "
                        "WHERE r1=%d "
                        "ORDER BY val DESC "
-                       "LIMIT 5")
+                       "LIMIT 10")
                       % r)
             results += list(c.fetchall())
             c.execute(("SELECT r1, val "
                        "FROM r_matrix2 "
                        "WHERE r2=%d "
                        "ORDER BY val DESC "
-                       "LIMIT 5")
+                       "LIMIT 10")
                       % r)
             results += list(c.fetchall())
             results_ = {}
