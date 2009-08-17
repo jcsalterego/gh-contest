@@ -26,8 +26,8 @@ class Database:
         self.top_repos = []
         self.r_matrix = {} # special pickling
         self.u_matrix = {} # special pickling
-        self.r_idf_sum = {}
-        self.fields = ['test_u', 'top_repos', 'r_idf_sum']
+        self.r_idf_avg = {}
+        self.fields = ['test_u', 'top_repos', 'r_idf_avg']
         self.save_db = False
 
         if self.pickle_jar():
@@ -141,18 +141,18 @@ class Database:
         total_users = float(len(self.u_watching))
         for repos, users in self.watching_r.items():
             idf_repos = log(total_users / (1.0 + len(self.watching_r[repos])))
-            tf_idf_sum = 0.0
+            tf_idf_avg = 0.0
             for user in users:
                 tf_user = 1.0 / len(self.u_watching[user])
                 tf_idf = tf_user * idf_repos
-                tf_idf_sum += tf_idf
+                tf_idf_avg += tf_idf
                 self.r_idf[repos].append((user, tf_idf))
 
                 # counter
                 iter += 1
                 if iter % 10000 == 0:
                     msg("tf-idf iter %d" % iter)
-            self.r_idf_sum[repos] = tf_idf_sum
+            self.r_idf_avg[repos] = tf_idf_avg / len(users)
 
         msg("making top_repos")
         top_repos = sorted(self.watching_r.items(),

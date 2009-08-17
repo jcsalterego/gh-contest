@@ -130,8 +130,8 @@ class Engine:
             results += list(c.fetchall())
             results_ = {}
             for r1, val in results:
-                # msg("vals: %4.2f vs %4.2f" % (val, db.r_idf_sum[r1]))
-                results_[r1] = db.r_idf_sum[r1]
+                # msg("vals: %4.2f vs %4.2f" % (val, db.r_idf_avg[r1]))
+                results_[r1] = db.r_idf_avg[r1]
             results = results_.items()
             results.sort(reverse=True, key=lambda x:x[1])
 
