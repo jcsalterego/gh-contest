@@ -263,6 +263,12 @@ class Engine:
                 % (avg_score, scores[0][1], scores[num_scores - 1][1]))
 
         if num_scores < 10:
+            msg("making local top_repos since num_scores < 10")
+            top_repos = sorted(db.watching_r.items(),
+                               key=lambda x:sum([1 for y in x[1]
+                                                 if abs(user - y) < 500]),
+                               reverse=True)
+            top_repos = [x[0] for x in top_repos][:10]
             for r in top_repos:
                 if r not in top_scores:
                     top_scores.append(r)
