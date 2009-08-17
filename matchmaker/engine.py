@@ -37,8 +37,12 @@ class Engine:
 
         if user not in db.u_watching:
             # blank son of a gun!
-            msg("No repos, setting to default top_repos")
-            return db.top_repos[:10]
+            msg("making local top_repos")
+            top_repos = sorted(db.watching_r.items(),
+                               key=lambda x:sum([1 for y in x[1]
+                                                 if abs(user - y) < 500]),
+                               reverse=True)
+            return [x[0] for x in top_repos][:10]
 
         r_info = db.r_info
         r_name = db.r_name
@@ -245,7 +249,12 @@ class Engine:
         num_scores = len(top_scores)
         
         if not num_scores:
-            msg("  no scores!")
+            msg("  no scores! so, making local top_repos")
+            top_repos = sorted(db.watching_r.items(),
+                               key=lambda x:sum([1 for y in x[1]
+                                                 if abs(user - y) < 500]),
+                               reverse=True)
+            return [x[0] for x in top_repos][:10]
         else:
             avg_score = (float(sum([repos[1]
                                     for repos in scores[:num_scores]]))
