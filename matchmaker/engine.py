@@ -132,7 +132,7 @@ class Engine:
         top_neighbors = sorted(top_neighbors.items(),
                                key=lambda x:x[1],
                                reverse=True)
-        for r1, val in top_neighbors[:5]:
+        for r1, val in top_neighbors[:10]:
             scores[r1] += log(val + len(watching_r[r1]), 10)
 
         for r in u_watching[user]:
