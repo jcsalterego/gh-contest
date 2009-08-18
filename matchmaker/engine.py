@@ -135,7 +135,7 @@ class Engine:
             results = results_.items()
             results.sort(reverse=True, key=lambda x:x[1])
 
-            for r1, val in results[:10]:
+            for r1, val in results[:5]:
                 scores[r1] += log(val + len(watching_r[r1]), 10)
 
             # find forks
