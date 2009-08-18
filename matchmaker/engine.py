@@ -136,18 +136,18 @@ class Engine:
             results.sort(reverse=True, key=lambda x:x[1])
 
             for r1, val in results[:5]:
-                scores[r1] += log(val, 10)
+                scores[r1] += log(val + len(watching_r[r1]), 10)
 
             # find forks
             for r1 in forks_of_r[r]:
-                scores[r1] += log(db.r_idf_avg[r1], 10)
+                scores[r1] += log(2 + len(watching_r[r1]), 10)
 
             # find parents and siblings
             if parent_of_r[r] > 0:
                 parent = parent_of_r[r]
                 scores[parent] += 2
                 for r1 in forks_of_r[parent]:
-                    scores[r1] += log(2 + db.r_idf_avg[r1], 10)
+                    scores[r1] += log(2 + len(watching_r[r1]), 10)
 
                     # find others by author of parent
                     if r1 in r_info:
@@ -160,7 +160,7 @@ class Engine:
                 gparent = gparent_of_r[r]
                 scores[gparent] += 3
                 for r1 in forks_of_r[gparent]:
-                    scores[r1] += log(2 + db.r_idf_avg[r1], 10)
+                    scores[r1] += log(2 + len(watching_r[r1]), 10)
 
                     # find others by author of gparent
                     if r1 in r_info:
@@ -172,12 +172,12 @@ class Engine:
             if r in r_info:
                 author, name = r_info[r][0], r_info[r][1]
                 for r1 in sorted(u_authoring[author], reverse=True):
-                    scores[r1] += 1.5 * log(2 + db.r_idf_avg[r1], 10)
+                    scores[r1] += 1.5 * log(2 + len(watching_r[r1]), 10)
 
                 # check names
                 if name in r_name:
                     for r1 in r_name[name]:
-                        scores[r1] += log(1 + db.r_idf_avg[r1], 10)
+                        scores[r1] += log(1 + len(watching_r[r1]), 10)
 
                 words = name.lower().replace("-", "_").replace(".", "_")
                 words = words.split("_")
@@ -190,7 +190,7 @@ class Engine:
                     if prefix in r_prefixes:
                         for r2 in r_prefixes[prefix]:
                             scores[r2] += (0.25 * i
-                                           * log(1 + db.r_idf_avg[r1], 10))
+                                           * log(1 + len(watching_r[r1]), 10))
 
         # cleanup
         for r in u_watching[user] + [0]:
