@@ -108,6 +108,33 @@ class Engine:
                                db='matrix')
         c = conn.cursor()
 
+        results = []
+        c.execute(("SELECT u2, val "
+                   "FROM u_matrix2 "
+                   "WHERE u1=%d "
+                   "ORDER BY val DESC")
+                  % user)
+        results += list(c.fetchall())
+        c.execute(("SELECT u1, val "
+                   "FROM u_matrix2 "
+                   "WHERE u2=%d "
+                   "ORDER BY val DESC")
+                  % user)
+        results += list(c.fetchall())
+        r_neighbors = set()
+        top_neighbors = {}
+        for u1, _ in results:
+            if u1 in u_watching:
+                for r1 in u_watching[u1]:
+                    r_neighbors.add(r1)
+        for r1 in r_neighbors:
+            top_neighbors[r1] = db.r_idf_avg[r1]
+        top_neighbors = sorted(top_neighbors.items(),
+                               key=lambda x:x[1],
+                               reverse=True)
+        for r1, val in results[:5]:
+            scores[r1] += log(val + len(watching_r[r1]), 10)
+
         for r in u_watching[user]:
             # loop through all watched repositories
 
