@@ -40,7 +40,7 @@ class Engine:
             msg("making local top_repos")
             top_repos = sorted(db.watching_r.items(),
                                key=lambda x:sum([1 for y in x[1]
-                                                 if abs(user - y) < 500]),
+                                                 if abs(user - y) < 250]),
                                reverse=True)
             return [x[0] for x in top_repos][:10]
 
@@ -278,7 +278,7 @@ class Engine:
             msg("  no scores! so, making local top_repos")
             top_repos = sorted(db.watching_r.items(),
                                key=lambda x:sum([1 for y in x[1]
-                                                 if abs(user - y) < 500]),
+                                                 if abs(user - y) < 250]),
                                reverse=True)
             return [x[0] for x in top_repos][:10]
         else:
@@ -292,7 +292,7 @@ class Engine:
             msg("making local top_repos since num_scores < 10")
             top_repos = sorted(db.watching_r.items(),
                                key=lambda x:sum([1 for y in x[1]
-                                                 if abs(user - y) < 500]),
+                                                 if abs(user - y) < 250]),
                                reverse=True)
             top_repos = [x[0] for x in top_repos][:10]
             for r in top_repos:
