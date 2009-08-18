@@ -128,13 +128,7 @@ class Engine:
                        "LIMIT 5")
                       % r)
             results += list(c.fetchall())
-            results_ = {}
-            for r1, val in results:
-                # msg("vals: %4.2f vs %4.2f" % (val, db.r_idf_avg[r1]))
-                results_[r1] = db.r_idf_avg[r1]
-            results = results_.items()
             results.sort(reverse=True, key=lambda x:x[1])
-
             for r1, val in results[:5]:
                 scores[r1] += log(val + len(watching_r[r1]), 10)
 
