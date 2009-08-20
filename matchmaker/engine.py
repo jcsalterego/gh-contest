@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import datetime
+from datetime import date
 import MySQLdb as mysqldb
 import random
 import sys
@@ -220,6 +220,27 @@ class Engine:
                             scores[r2] += (0.25 * i
                                            * log(1 + len(watching_r[r1]), 10))
 
+        if len(u_watching[user]) > 7:
+            dates = [r_info[r][2]
+                     for r in u_watching[user]
+                     if r in r_info]
+            msg(dates)
+            mean = sum(dates) / len(dates)
+            msg("mean is %s" % date(1,1,1).fromordinal(mean))
+
+            std_dev = (sum([(x - mean) ** 2 for x in dates])
+                       / len(dates)) ** 0.5
+            threshold = std_dev * 2.5
+            msg("std_dev is %f" % std_dev)
+
+            for r1 in scores:
+                if r1 not in r_info:
+                    continue
+                
+                created = r_info[r1][2]
+                if abs(created - mean) > threshold:
+                    scores[r1] -= 10.0
+
         if True:
             output = []
             fh = file("debug.txt", "a")
@@ -234,7 +255,7 @@ class Engine:
                                      r_info[r][0],
                                      r_info[r][1],
                                      r_info[r][2],
-                                     datetime.date(1, 1, 1).fromordinal(r_info[r][2])))
+                                     date(1, 1, 1).fromordinal(r_info[r][2])))
                 else:
                     output.append("     WATCH %8d" % r)
             output.append("-")
@@ -250,7 +271,7 @@ class Engine:
                                          r_info[r][0],
                                          r_info[r][1],
                                          r_info[r][2],
-                                         datetime.date(1, 1, 1).fromordinal(r_info[r][2])))
+                                         date(1, 1, 1).fromordinal(r_info[r][2])))
                     else:
                         output.append("   %4.2f %8d"
                                       % (score, r))
@@ -262,7 +283,7 @@ class Engine:
                                          r_info[r][0],
                                          r_info[r][1],
                                          r_info[r][2],
-                                         datetime.date(1, 1, 1).fromordinal(r_info[r][2])))
+                                         date(1, 1, 1).fromordinal(r_info[r][2])))
                     else:
                         output.append("++ %4.2f %8d"
                                       % (score, r))
