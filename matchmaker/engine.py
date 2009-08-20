@@ -148,15 +148,15 @@ class Engine:
 
             results = []
             c.execute(("SELECT r2, val "
-                       "FROM r_matrix2 "
+                       "FROM r_matrix_fwd "
                        "WHERE r1=%d "
                        "ORDER BY val DESC "
                        "LIMIT 5")
                       % r)
             results += list(c.fetchall())
-            c.execute(("SELECT r1, val "
-                       "FROM r_matrix2 "
-                       "WHERE r2=%d "
+            c.execute(("SELECT r2, val "
+                       "FROM r_matrix_bkwd "
+                       "WHERE r1=%d "
                        "ORDER BY val DESC "
                        "LIMIT 5")
                       % r)

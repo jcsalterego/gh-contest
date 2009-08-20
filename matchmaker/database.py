@@ -28,7 +28,7 @@ class Database:
         self.u_matrix = {} # special pickling
         self.r_idf_avg = {}
         self.fields = ['test_u', 'top_repos', 'r_idf_avg']
-        self.save_db = False
+        self.save_db = True
 
         if self.pickle_jar():
             return
@@ -169,6 +169,7 @@ class Database:
                                db='matrix')
         c = conn.cursor()
 
+        """
         iter = 0
         msg("making u_matrix")
         for users in self.watching_r.values():
@@ -187,6 +188,7 @@ class Database:
                     iter += 1
                     if iter % 100000 == 0:
                         msg("[] iter %d" % iter)
+
         iter = 0
         msg("saving u_matrix")
         values = []
@@ -208,9 +210,10 @@ class Database:
             sql = "".join(("INSERT INTO u_matrix ",
                            ",".join(values)))
             c.execute(sql)
+        """
 
         iter = 0
-        msg("making r_matrix")
+        msg("making r_matrix_fwd")
         for repos in self.u_watching.values():
             repos.sort()
             for i in xrange(len(repos)):
@@ -228,16 +231,15 @@ class Database:
                     if iter % 100000 == 0:
                         msg("[] iter %d" % iter)
         iter = 0
-        msg("saving r_matrix")
+        msg("saving r_matrix_fwd")
         values = []
         for r_i in self.r_matrix:
             for r_j in self.r_matrix[r_i]:
                 values.append("(%d,%d,%d)"
                               % (r_i, r_j, self.r_matrix[r_i][r_j]))
-
                 iter += 1
                 if iter % 5000 == 0:
-                    sql = "".join(("INSERT INTO r_matrix(r1,r2,val) VALUES",
+                    sql = "".join(("INSERT INTO r_matrix_fwd(r1,r2,val) VALUES",
                                    ",".join(values)))
                     c.execute(sql)
                     values = []
@@ -245,9 +247,55 @@ class Database:
                     msg("DB iter %d" % iter)
                     conn.commit()
         if values:
-            sql = "".join(("INSERT INTO r_matrix ",
+            sql = "".join(("INSERT INTO r_matrix_fwd(r1,r2,val) VALUES",
                            ",".join(values)))
             c.execute(sql)
+
+
+        iter = 0
+        msg("making r_matrix_bkwd")
+        for repos in self.u_watching.values():
+            repos.sort(reverse=True)
+            for i in xrange(len(repos)):
+                for j in xrange(i + 1, len(repos)):
+                    r_i, r_j = repos[i], repos[j]
+
+                    if r_i not in self.r_matrix:
+                        self.r_matrix[r_i] = {r_j: 1}
+                    elif r_j not in self.r_matrix[r_i]:
+                        self.r_matrix[r_i][r_j] = 1
+                    else:
+                        self.r_matrix[r_i][r_j] += 1
+
+                    iter += 1
+                    if iter % 100000 == 0:
+                        msg("[] iter %d" % iter)
+        iter = 0
+        msg("saving r_matrix_bkwd")
+        values = []
+        for r_i in self.r_matrix:
+            for r_j in self.r_matrix[r_i]:
+                values.append("(%d,%d,%d)"
+                              % (r_i, r_j, self.r_matrix[r_i][r_j]))
+                iter += 1
+                if iter % 5000 == 0:
+                    sql = "".join(("INSERT INTO r_matrix_bkwd(r1,r2,val) VALUES",
+                                   ",".join(values)))
+                    c.execute(sql)
+                    values = []
+                if iter % 10000 == 0:
+                    msg("DB iter %d" % iter)
+                    conn.commit()
+        if values:
+            sql = "".join(("INSERT INTO r_matrix_bkwd(r1,r2,val) VALUES",
+                           ",".join(values)))
+            c.execute(sql)
+
+
+
+
+
+
 
     def parse_repos(self):
         """Parse repos.txt which has repository lineage information
