@@ -224,18 +224,18 @@ class Engine:
                             scores[r2] += (0.25 * i
                                            * log(1 + len(watching_r[r1]), 10))
 
-        if len(u_watching[user]) > 7:
+        if len(u_watching[user]) > 5:
             dates = [r_info[r][2]
                      for r in u_watching[user]
                      if r in r_info]
-            msg(dates)
+            # msg(dates)
             mean = sum(dates) / len(dates)
-            msg("mean is %s" % date(1,1,1).fromordinal(mean))
+            # msg("mean is %s" % date(1,1,1).fromordinal(mean))
 
             std_dev = (sum([(x - mean) ** 2 for x in dates])
                        / len(dates)) ** 0.5
             threshold = std_dev * 2.5
-            msg("std_dev is %f" % std_dev)
+            # msg("std_dev is %f" % std_dev)
 
             for r1 in scores:
                 if r1 not in r_info:
