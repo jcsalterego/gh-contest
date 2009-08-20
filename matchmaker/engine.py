@@ -274,6 +274,26 @@ class Engine:
         for i in sorted(purge, reverse=True):
             del scores[i]
 
+        # boost by date
+        if len(u_watching[user]) > 7:
+            dates = []
+            for r in u_watching[user]:
+                if r not in r_info:
+                    continue
+                dates.append(r_info[r][2])
+            dates = sorted(dates)[1:-1]
+            mean = sum(dates) / len(dates)
+            std_dev = (sum([(x - mean) ** 2 for x in dates])
+                       / len(dates)) ** 0.5
+            if std_dev:
+                for iter in xrange(10, len(scores)):
+                    r, score = scores[iter]
+                    if r not in r_info:
+                        continue
+                    boost = (-1.0 * ((r_info[r][2] - mean) / (2.0 * std_dev)) ** 2.0 + 1.0)
+                    score += boost
+                    scores[iter] = (r, score)
+            
         if len(scores) > 3000:
             mean = sum([x[1] for x in scores]) / len(scores)
             std_dev = (sum([(x[1] - mean) ** 2
@@ -334,9 +354,10 @@ class Engine:
             fh.write("\n".join(output))
             fh.close()
 
+        scores.sort(reverse=True, key=lambda x:x[1])
         top_scores = [repos[0] for repos in scores[:10]]
         num_scores = len(top_scores)
-        
+
         if not num_scores:
             msg("  no scores! so, making local top_repos")
             top_repos = sorted(db.watching_r.items(),
