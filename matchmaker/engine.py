@@ -21,7 +21,7 @@ class Engine:
     def process(self):
         db = self.database
 
-        partition = 1
+        partition = 10
         if partition > 1:
             new_len = len(db.test_u) / partition
             msg("Partitioning 1/%d [%d]" % (partition, new_len))
@@ -224,6 +224,7 @@ class Engine:
                             scores[r2] += (0.25 * i
                                            * log(1 + len(watching_r[r1]), 10))
 
+        """
         if len(u_watching[user]) > 7:
             dates = [r_info[r][2]
                      for r in u_watching[user]
@@ -244,6 +245,7 @@ class Engine:
                 created = r_info[r1][2]
                 if abs(created - mean) > threshold:
                     scores[r1] -= 10.0
+        """
 
         if True:
             output = []
