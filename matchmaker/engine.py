@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import datetime
 import MySQLdb as mysqldb
 import random
 import sys
@@ -219,6 +220,43 @@ class Engine:
                             scores[r2] += (0.25 * i
                                            * log(1 + len(watching_r[r1]), 10))
 
+        if True:
+            output = []
+            fh = file("debug.txt", "a")
+            output.append("user: %5d" % user)
+            output.append("watching: %5d, scores: %5d" % (len(u_watching[user]), len(scores)))
+            output.append("")
+    
+            _scores = sorted(scores.items(),
+                             key=lambda x:x[1])
+            for r, score in scores.items():
+                if r in u_watching[user]:
+                    if r in r_info:
+                        output.append("   %6.3f %8d: %-20s %-50s %s %s"
+                                      % (score, r,
+                                         r_info[r][0],
+                                         r_info[r][1],
+                                         r_info[r][2],
+                                         datetime.date(1, 1, 1).fromordinal(r_info[r][2])))
+                    else:
+                        output.append("   %4.2f %8d"
+                                      % (score, r))
+
+                else:
+                    if r in r_info:
+                        output.append("++ %6.3f %8d: %-20s %-50s %s %s"
+                                      % (score, r,
+                                         r_info[r][0],
+                                         r_info[r][1],
+                                         r_info[r][2],
+                                         datetime.date(1, 1, 1).fromordinal(r_info[r][2])))
+                    else:
+                        output.append("++ %4.2f %8d"
+                                      % (score, r))
+            output.append("")
+            fh.write("\n".join(output))
+            fh.close()
+
         # cleanup
         for r in u_watching[user] + [0]:
             try:
@@ -248,7 +286,6 @@ class Engine:
             del scores[i]
 
         if len(scores) > 3000:
-            output = []
             mean = sum([x[1] for x in scores]) / len(scores)
             std_dev = (sum([(x[1] - mean) ** 2
                             for x in scores])
@@ -258,25 +295,6 @@ class Engine:
             if scores_:
                 scores = scores_
     
-            fh = file("debug.txt", "a")
-            output.append("user: %5d" % user)
-            output.append("total: %5d" % len(scores))
-            output.append("")
-    
-            for r, score in scores:
-                if r in r_info:
-                    output.append(">> %6.3f %8d: %-20s %-50s %s"
-                                  % (score, r,
-                                     r_info[r][0],
-                                     r_info[r][1],
-                                     r_info[r][2]))
-                else:
-                    output.append(">> %4.2f %8d"
-                                  % (score, r))
-            output.append("")
-            fh.write("\n".join(output))
-            fh.close()
-
         top_scores = [repos[0] for repos in scores[:10]]
         num_scores = len(top_scores)
         
