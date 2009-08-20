@@ -246,7 +246,44 @@ class Engine:
                 if abs(created - mean) > threshold:
                     scores[r1] -= 10.0
         """
+        # cleanup
+        for r in u_watching[user] + [0]:
+            try:
+                del scores[r]
+            except:
+                pass
 
+        orig_scores = scores
+        scores = sorted(scores.items(), reverse=True, key=lambda x:x[1])
+        authors = defaultdict(int)
+        names = defaultdict(int)
+        purge = []
+        iter = 0
+        for r, score in scores:
+            if r in r_info:
+                author, name, _ = r_info[r]
+                authors[author] += 1
+                names[name] += 1
+
+                if authors[author] > 2:
+                    purge.append(iter)
+                elif names[name] > 5:
+                    purge.append(iter)
+            iter += 1
+
+        for i in sorted(purge, reverse=True):
+            del scores[i]
+
+        if len(scores) > 3000:
+            mean = sum([x[1] for x in scores]) / len(scores)
+            std_dev = (sum([(x[1] - mean) ** 2
+                            for x in scores])
+                       / len(scores)) ** 0.5
+            cutoff = mean + std_dev * 2.5
+            scores_ = sorted([x for x in scores if x[1] > cutoff])
+            if scores_:
+                scores = scores_
+    
         if True:
             output = []
             fh = file("debug.txt", "a")
@@ -256,17 +293,17 @@ class Engine:
 
             for r in u_watching[user]:
                 if r in r_info:
-                    output.append("     WATCH %8d: %-20s %-50s %s %s"
+                    output.append("    WATCH %8d: %-20s %-50s %s %s"
                                   % (r,
                                      r_info[r][0],
                                      r_info[r][1],
                                      r_info[r][2],
                                      date(1, 1, 1).fromordinal(r_info[r][2])))
                 else:
-                    output.append("     WATCH %8d" % r)
+                    output.append("    WATCH %8d" % r)
             output.append("-")
 
-            scores_ = sorted(scores.items(),
+            scores_ = sorted(scores,
                              key=lambda x:(1 if x in u_watching[user] else 0, x[1]),
                              reverse=True)
             for r, score in scores_:
@@ -297,44 +334,6 @@ class Engine:
             fh.write("\n".join(output))
             fh.close()
 
-        # cleanup
-        for r in u_watching[user] + [0]:
-            try:
-                del scores[r]
-            except:
-                pass
-
-        orig_scores = scores
-        scores = sorted(scores.items(), reverse=True, key=lambda x:x[1])
-        authors = defaultdict(int)
-        names = defaultdict(int)
-        purge = []
-        iter = 0
-        for r, score in scores:
-            if r in r_info:
-                author, name, _ = r_info[r]
-                authors[author] += 1
-                names[name] += 1
-
-                if authors[author] > 3:
-                    purge.append(iter)
-                elif names[name] > 5:
-                    purge.append(iter)
-            iter += 1
-
-        for i in sorted(purge, reverse=True):
-            del scores[i]
-
-        if len(scores) > 3000:
-            mean = sum([x[1] for x in scores]) / len(scores)
-            std_dev = (sum([(x[1] - mean) ** 2
-                            for x in scores])
-                       / len(scores)) ** 0.5
-            cutoff = mean + std_dev * 2.5
-            scores_ = sorted([x for x in scores if x[1] > cutoff])
-            if scores_:
-                scores = scores_
-    
         top_scores = [repos[0] for repos in scores[:10]]
         num_scores = len(top_scores)
         
