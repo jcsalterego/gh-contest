@@ -224,7 +224,7 @@ class Engine:
                             scores[r2] += (0.25 * i
                                            * log(1 + len(watching_r[r1]), 10))
 
-        if len(u_watching[user]) > 5:
+        if len(u_watching[user]) > 7:
             dates = [r_info[r][2]
                      for r in u_watching[user]
                      if r in r_info]
