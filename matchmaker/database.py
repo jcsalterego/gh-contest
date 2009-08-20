@@ -8,6 +8,7 @@ try:
     from itertools import permutations
 except:
     from matchmaker.utils import permutations
+from datetime import date
 import MySQLdb as mysqldb
 import os
 
@@ -28,7 +29,7 @@ class Database:
         self.u_matrix = {} # special pickling
         self.r_idf_avg = {}
         self.fields = ['test_u', 'top_repos', 'r_idf_avg']
-        self.save_db = True
+        self.save_db = False
 
         if self.pickle_jar():
             return
@@ -316,6 +317,8 @@ class Database:
                 self.forks_of_r[parent].append(repos)
                 self.parent_of_r[repos] = parent
             author, name = name.split("/")
+            words = [int(x) for x in creation.split("-")]
+            creation = date(words[0], words[1], words[2]).toordinal()
             self.r_info[repos] = (author, name, creation)
             self.u_authoring[author].append(repos)
             self.r_name[name].append(repos)
