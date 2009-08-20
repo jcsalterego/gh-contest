@@ -226,10 +226,23 @@ class Engine:
             output.append("user: %5d" % user)
             output.append("watching: %5d, scores: %5d" % (len(u_watching[user]), len(scores)))
             output.append("")
-    
-            _scores = sorted(scores.items(),
-                             key=lambda x:x[1])
-            for r, score in scores.items():
+
+            for r in u_watching[user]:
+                if r in r_info:
+                    output.append("     WATCH %8d: %-20s %-50s %s %s"
+                                  % (r,
+                                     r_info[r][0],
+                                     r_info[r][1],
+                                     r_info[r][2],
+                                     datetime.date(1, 1, 1).fromordinal(r_info[r][2])))
+                else:
+                    output.append("     WATCH %8d" % r)
+            output.append("-")
+
+            scores_ = sorted(scores.items(),
+                             key=lambda x:(1 if x in u_watching[user] else 0, x[1]),
+                             reverse=True)
+            for r, score in scores_:
                 if r in u_watching[user]:
                     if r in r_info:
                         output.append("   %6.3f %8d: %-20s %-50s %s %s"

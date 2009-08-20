@@ -6,4 +6,5 @@ wipe:
 stats:
 	python recommend.py stats | less
 production:
+	rm -f debug.txt
 	time python recommend.py production >/dev/null
