@@ -152,17 +152,21 @@ class Engine:
                        "FROM r_matrix_fwd "
                        "WHERE r1=%d "
                        "ORDER BY val DESC "
-                       "LIMIT 5")
+                       "LIMIT 20")
                       % r)
             results += list(c.fetchall())
             c.execute(("SELECT r2, val "
                        "FROM r_matrix_bkwd "
                        "WHERE r1=%d "
                        "ORDER BY val DESC "
-                       "LIMIT 5")
+                       "LIMIT 20")
                       % r)
             results += list(c.fetchall())
-            results.sort(reverse=True, key=lambda x:x[1])
+            results = sorted(dict(results).items(),
+                             reverse=True,
+                             key=lambda x:x[1])
+            results = [result for result in results
+                       if result not in u_watching[user]]
             for r1, val in results[:5]:
                 scores[r1] += log(val + len(watching_r[r1]), 10)
 
