@@ -290,9 +290,10 @@ class Engine:
                     r, score = scores[iter]
                     if r not in r_info:
                         continue
-                    boost = (-1.0 * ((r_info[r][2] - mean) / (2.0 * std_dev)) ** 2.0 + 1.0)
-                    score += boost
-                    scores[iter] = (r, score)
+                    boost = 1.0 - ((r_info[r][2] - mean) / (2.5 * std_dev)) ** 2.0
+                    if boost > 0:
+                        score += boost
+                        scores[iter] = (r, score)
             
         if len(scores) > 3000:
             mean = sum([x[1] for x in scores]) / len(scores)
