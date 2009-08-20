@@ -230,7 +230,7 @@ class Engine:
 
             std_dev = (sum([(x - mean) ** 2 for x in dates])
                        / len(dates)) ** 0.5
-            threshold = std_dev * 1.5
+            threshold = std_dev * 2.5
             msg("std_dev is %f" % std_dev)
 
             for r1 in scores:
