@@ -114,6 +114,7 @@ class Engine:
                                db='matrix')
         c = conn.cursor()
 
+        """
         results = []
         c.execute(("SELECT u2, val "
                    "FROM u_matrix_fwd "
@@ -140,6 +141,7 @@ class Engine:
                             reverse=True)[:10]
             for r1, r_val in diff_s:
                 scores[r1] += 0.5 * log(1 + u_val * r_val, 10)
+        """
 
         for r in u_watching[user]:
             # loop through all watched repositories
