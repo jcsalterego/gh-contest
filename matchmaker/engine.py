@@ -135,7 +135,7 @@ class Engine:
         for u1, u_val in results[:3]:
             if u1 in u_watching:
                 for r1 in u_watching[u1]:
-                    scores[r1] += u_val
+                    scores[r1] += log(u_val, 10)
 
         for r in u_watching[user]:
             # loop through all watched repositories
