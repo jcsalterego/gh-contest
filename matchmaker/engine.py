@@ -132,10 +132,14 @@ class Engine:
         results = sorted(dict(results).items(),
                          reverse=True,
                          key=lambda x:x[1])
+        user_s = set(u_watching[user])
         for u1, u_val in results[:3]:
-            if u1 in u_watching:
-                for r1 in u_watching[u1]:
-                    scores[r1] += log(u_val, 10)
+            diff_s = set(u_watching[u1]) - user_s
+            diff_s = sorted([(s, len(watching_r[s])) for s in diff_s],
+                            key=lambda x:x[1],
+                            reverse=True)[:10]
+            for r1, r_val in diff_s:
+                scores[r1] += 0.5 * log(1 + u_val * r_val, 10)
 
         for r in u_watching[user]:
             # loop through all watched repositories
