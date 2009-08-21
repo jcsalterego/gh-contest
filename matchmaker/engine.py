@@ -21,7 +21,7 @@ class Engine:
     def process(self):
         db = self.database
 
-        partition = 1
+        partition = 10
         if partition > 1:
             new_len = len(db.test_u) / partition
             msg("Partitioning 1/%d [%d]" % (partition, new_len))
@@ -58,7 +58,6 @@ class Engine:
         r_prefixes = db.r_prefixes
         top_repos = db.top_repos
         lang_by_r = db.lang_by_r
-        u_matrix = db.u_matrix
         u_watching = db.u_watching
         watching_r = db.watching_r
         forks_of_r = db.forks_of_r
@@ -117,30 +116,26 @@ class Engine:
 
         results = []
         c.execute(("SELECT u2, val "
-                   "FROM u_matrix2 "
+                   "FROM u_matrix_fwd "
                    "WHERE u1=%d "
-                   "ORDER BY val DESC")
+                   "ORDER BY val DESC "
+                   "LIMIT 5")
                   % user)
         results += list(c.fetchall())
-        c.execute(("SELECT u1, val "
-                   "FROM u_matrix2 "
-                   "WHERE u2=%d "
-                   "ORDER BY val DESC")
+        c.execute(("SELECT u2, val "
+                   "FROM u_matrix_bkwd "
+                   "WHERE u1=%d "
+                   "ORDER BY val DESC "
+                   "LIMIT 5")
                   % user)
         results += list(c.fetchall())
-        r_neighbors = set()
-        top_neighbors = {}
-        for u1, _ in results:
+        results = sorted(dict(results).items(),
+                         reverse=True,
+                         key=lambda x:x[1])
+        for u1, u_val in results[:3]:
             if u1 in u_watching:
                 for r1 in u_watching[u1]:
-                    r_neighbors.add(r1)
-        for r1 in r_neighbors:
-            top_neighbors[r1] = db.r_idf_avg[r1]
-        top_neighbors = sorted(top_neighbors.items(),
-                               key=lambda x:x[1],
-                               reverse=True)
-        for r1, val in top_neighbors[:5]:
-            scores[r1] += log(val + len(watching_r[r1]), 10)
+                    scores[r1] += log(u_val + len(watching_r[r1]), 10)
 
         for r in u_watching[user]:
             # loop through all watched repositories
