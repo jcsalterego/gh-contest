@@ -114,7 +114,6 @@ class Engine:
                                db='matrix')
         c = conn.cursor()
 
-        """
         results = []
         c.execute(("SELECT u2, val "
                    "FROM u_matrix_fwd "
@@ -134,14 +133,18 @@ class Engine:
                          reverse=True,
                          key=lambda x:x[1])
         user_s = set(u_watching[user])
-        for u1, u_val in results[:3]:
+        r_neighbors = defaultdict(int)
+
+        for u1, u_val in results[:5]:
             diff_s = set(u_watching[u1]) - user_s
-            diff_s = sorted([(s, len(watching_r[s])) for s in diff_s],
-                            key=lambda x:x[1],
-                            reverse=True)[:10]
-            for r1, r_val in diff_s:
-                scores[r1] += 0.5 * log(1 + u_val * r_val, 10)
-        """
+            for r1 in diff_s:
+                r_neighbors[r1] += 1
+
+        r_neighbors = sorted(r_neighbors.items(),
+                             reverse=True,
+                             key=lambda x:x[1])[:10]
+        for r1, count in r_neighbors:
+            scores[r1] += 0.5 * log(1 + len(u_watching[r1]), 10)
 
         for r in u_watching[user]:
             # loop through all watched repositories
