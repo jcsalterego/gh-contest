@@ -170,48 +170,62 @@ class Database:
                                db='matrix')
         c = conn.cursor()
 
-        """
         iter = 0
-        msg("making u_matrix")
-        for users in self.watching_r.values():
-            users.sort()
-            for i in xrange(len(users)):
-                for j in xrange(i + 1, len(users)):
-                    u_i, u_j = users[i], users[j]
-
-                    if u_i not in self.u_matrix:
-                        self.u_matrix[u_i] = {u_j: 1}
-                    elif u_j not in self.u_matrix[u_i]:
-                        self.u_matrix[u_i][u_j] = 1
-                    else:
-                        self.u_matrix[u_i][u_j] += 1
-
-                    iter += 1
-                    if iter % 100000 == 0:
-                        msg("[] iter %d" % iter)
-
-        iter = 0
-        msg("saving u_matrix")
         values = []
-        for u_i in self.u_matrix:
-            for u_j in self.u_matrix[u_i]:
-                values.append("(%d,%d,%d)"
-                              % (u_i, u_j, self.u_matrix[u_i][u_j]))
+        msg("making u_matrix_fwd")
+        users = sorted(self.u_watching.keys())
+        for i in xrange(len(users)):
+            for j in xrange(i + 1, len(users)):
+                s_i = set(self.u_watching[users[i]])
+                s_j = set(self.u_watching[users[j]])
+
+                diff = len(set.symmetric_difference(s_i, s_j))
+                values.append("(%d,%d,SQRT(%d))" % (users[i], users[j], diff))
 
                 iter += 1
-                if iter % 5000 == 0:
-                    sql = "".join(("INSERT INTO u_matrix(u1,u2,val) VALUES",
+                if iter % 10000 == 0:
+                    sql = "".join(("INSERT INTO u_matrix_fwd(u1,u2,val) VALUES",
                                    ",".join(values)))
                     c.execute(sql)
-                    values = []
-                if iter % 10000 == 0:
-                    msg("DB iter %d" % iter)
                     conn.commit()
+                    values = []
+                    msg("umf iter %d" % iter)
         if values:
-            sql = "".join(("INSERT INTO u_matrix ",
+            sql = "".join(("INSERT INTO u_matrix_fwd(u1,u2,val) VALUES",
                            ",".join(values)))
             c.execute(sql)
-        """
+            conn.commit()
+            msg("umf iter %d [END]" % iter)
+
+        iter = 0
+        values = []
+        msg("making u_matrix_bkwd")
+        users = sorted(self.u_watching.keys(), reverse=True)
+        for i in xrange(len(users)):
+            for j in xrange(i + 1, len(users)):
+                s_i = set(self.u_watching[users[i]])
+                s_j = set(self.u_watching[users[j]])
+
+                diff = len(set.symmetric_difference(s_i, s_j))
+                values.append("(%d,%d,SQRT(%d))" % (users[i], users[j], diff))
+
+                iter += 1
+                if iter % 10000 == 0:
+                    sql = "".join(("INSERT INTO u_matrix_bkwd(u1,u2,val) VALUES",
+                                   ",".join(values)))
+                    c.execute(sql)
+                    conn.commit()
+                    values = []
+                    msg("umb iter %d" % iter)
+        if values:
+            sql = "".join(("INSERT INTO u_matrix_bkwd(u1,u2,val) VALUES",
+                           ",".join(values)))
+            c.execute(sql)
+            conn.commit()
+            msg("umb iter %d [END]" % iter)
+
+        return
+        # ------------------------------------------------------------
 
         iter = 0
         msg("making r_matrix_fwd")
@@ -291,8 +305,6 @@ class Database:
             sql = "".join(("INSERT INTO r_matrix_bkwd(r1,r2,val) VALUES",
                            ",".join(values)))
             c.execute(sql)
-
-
 
 
 
