@@ -138,12 +138,12 @@ class Engine:
         for u1, u_val in results[:5]:
             diff_s = set(u_watching[u1]) - user_s
             for r1 in diff_s:
-                r_neighbors[r1] += 1
+                r_neighbors[r1] += u_val * len(u_watching[r1])
 
         r_neighbors = sorted(r_neighbors.items(),
                              reverse=True,
                              key=lambda x:x[1])[:10]
-        for r1, count in r_neighbors:
+        for r1, _ in r_neighbors:
             scores[r1] += 0.5 * log(1 + len(u_watching[r1]), 10)
 
         for r in u_watching[user]:
