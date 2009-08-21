@@ -21,7 +21,7 @@ class Engine:
     def process(self):
         db = self.database
 
-        partition = 10
+        partition = 1
         if partition > 1:
             new_len = len(db.test_u) / partition
             msg("Partitioning 1/%d [%d]" % (partition, new_len))
