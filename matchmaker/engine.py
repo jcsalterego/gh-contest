@@ -275,7 +275,7 @@ class Engine:
             del scores[i]
 
         # boost by date
-        if len(u_watching[user]) > 7:
+        if 7 < len(u_watching[user]) < 15:
             dates = []
             for r in u_watching[user]:
                 if r not in r_info:
